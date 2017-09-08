@@ -224,7 +224,7 @@ public:
         return head;       
     }
 };
-</pre></code>	
+</code></pre>
 	</div>
 </div>
 <br>
@@ -280,7 +280,7 @@ public:
         return false;
     }
 };
-</pre></code>	
+</code></pre>
 	</div>
 </div>
 <br>
@@ -328,7 +328,7 @@ public:
         return -1;   
     }
 };
-</pre></code>	
+</code></pre>
 	</div>
 </div>
 <br>
@@ -371,7 +371,7 @@ public:
         return false;
     }
 };
-</pre></code>	
+</code></pre>	
 	</div>
 </div>
 <br>
@@ -404,7 +404,7 @@ public:
         return res;
     }
 };
-</pre></code>	
+</code></pre>	
 	</div>
 </div>
 <br>
@@ -442,7 +442,7 @@ public:
         return string(res.rbegin(), res.rend());       
     }
 };
-</pre></code>	
+</code></pre>	
 	</div>
 </div>
 <br>
@@ -462,7 +462,7 @@ SELECT Employee.name as name, Bonus.bonus as bonus
 FROM Employee LEFT OUTER JOIN Bonus
 ON Employee.empId = Bonus.empId
 WHERE bonus < 1000 OR bonus IS NULL;
-</pre></code>	
+</code></pre>
 	</div>
 </div>
 <br>
@@ -483,7 +483,7 @@ SELECT ROUND(IFNULL(
 (SELECT COUNT(DISTINCT sender_id, send_to_id) FROM friend_request )
 
    ,0)  ,2)   AS accept_rate
-</pre></code>	
+</code></pre>
 	</div>
 </div>
 <br>
@@ -529,7 +529,7 @@ public:
         return num;
     }
 };
-</pre></code>	
+</code></pre>	
 	</div>
 </div>
 <br>
@@ -603,7 +603,7 @@ public:
         return res;  
     }
 };
-</pre></code>	
+</code></pre>
 	</div>
 </div>
 <br>
@@ -652,7 +652,7 @@ class Solution(object):
             return left
         else:
             return right
-</pre></code>	 
+</code></pre>	 
 <p>As one can see from my node: I am deviating from the two most commone binary search code writing styles. To find the exact match of increasing sequence: one can use one of the two codes below:</p>
 <pre><code class="python">
 def binarySearch(nums, target):
@@ -683,7 +683,7 @@ def binarySearch(nums, target):
 			right = mid - 1
 	print(left,right)
 	return -1
-</pre></code>   
+</code></pre>  
 
 <p>By moving 1 into while loop, one can actually write as below. Then, question comes: <b>what has this exactly achieved?</b></p>  
 <p> The answer is that this way, 
@@ -761,7 +761,7 @@ def binarySearch(nums, target):
 		return left
 	else:
 		return right
-</pre></code>
+</code></pre>
 		</div>
 	
 
@@ -814,7 +814,7 @@ class Solution(object):
 	        return False
 	    self.dfs(0, target, nums, 0)
 	    return self.res
-</pre></code>
+</code></pre>
 			
 			<p> Then I search solutions online and then realize that this question should be solved using DP (Dynamic Programming). Well, it is not surprising now when you think back, right? Just recall how many times that dp beats recursion in previous questions. But I haven't really coded in python for a long time and haven't done leetcode for a long time too. So it is really a good idea to summarize as I do now. I wish I can keep this habit just like what I did for running. So the dp code is below:</p>	
 <pre><code align="left" class = "code">
@@ -832,7 +832,7 @@ class Solution(object):
             for j in reversed(range(nums[i], target + 1)):
                 dp[j] = dp[j] or dp[j - nums[i]]
         return dp[-1]
-</pre></code>
+</code></pre>
 <p>If you find the code above hard to understand, don't blame yourself. Because it is pretty hard to understand. It is actually a version after space optimization. Time complexity here is $O(n^2)$ and space is $O(n)$. The more straight forward one before optimization will be following and the recurrence equation is </p>
 <pre><code class = "cpp">
 bool canPartition(vector&lt;int&gt;& nums) {
@@ -864,7 +864,7 @@ bool canPartition(vector&lt;int&gt;& nums) {
     }
     return dp[n][target];
 }
-</pre></code>
+</code></pre>
 <p>To summarize, the recursion approach is a top-down approach: Start solving the given problem by breaking it down. If you see that the problem has been solved already, then just return the saved answer. If it has not been solved, solve it and save the answer. This is usually easy to think of and very intuitive. This is also referred to as Memoization. While Dynamic Programming approach is a bottom-up approach: Analyze the problem and see the order in which the sub-problems are solved and start solving from the trivial subproblem, up towards the given problem. In this process, it is guaranteed that the subproblems are solved before solving the problem. Read more from the <a href="./materials/dpnotes.pdf">notes</a> by professor at UIUC.</p>
 
 
@@ -878,7 +878,7 @@ def coinChange(coins, amount):
 	            if x + c <= amount and (dp[x + c] < 0 or dp[x + c] > dp[x] + 1):
 	                dp[x + c] = dp[x] + 1
 	return dp[amount]
-</pre></code>
+</code></pre>
 		</div>
 	</div>
 
@@ -1131,7 +1131,7 @@ def poorPigs(self, buckets, minutesToDie, minutesToTest):
     while (minutesToTest / minutesToDie + 1) ** pigs < buckets:
         pigs += 1
     return pigs
-</pre></code>
+</code></pre>
 		</div>
 	</div>
 
