@@ -102,6 +102,190 @@ function topFunction() {
 <br>
 <br>
 
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 23. Merge k Sorted Lists</h3>
+		<h4>Posted on Sep 8, 2017</h4>
+<br>
+<p>Pay attention to the syntax that lambda expression cannot be used inside
+	priority_queue template and one should use <a href="http://www.geeksforgeeks.org/functors-in-cpp/">functor</a>. This is different from <a href="http://en.cppreference.com/w/cpp/algorithm/sort">sort</a>. For sorting, there are a few different ways of changing
+	 default comparator, either by overloading operators or using lambda expression/functor to create
+	 custom operator (in C++, default is std:less, and default is max heap for priority 
+	 queue, sorting order is increasing by fault). One can use functor for sort too but one should
+	 use cmp() instead of cmp. </p>
+	 <p>Advantage of C++ over Python in interview is that one can easily use min-heap by <pre><code>priority_queue<int, vector<int>, greater<int>> Q; </code></pre></p>
+	 <p>For the question itself, there are two ways of solving this question. One is divide and 
+	 	conquer: merge 2 lists at one time, and do it from bottom-up approach. The other is use
+	 	extra space to store first node for each linked-list. Both approaches have the same time complexity: $O(n \ k \ log(k))$, where $n$ is average number of nodes in a list and $k$
+	 	is number of lists.</p>
+	 <p>Also pay attention to the difference of heap and priority_queue: see <a href="http://pages.cs.wisc.edu/~vernon/cs367/notes/11.PRIORITY-Q.html">here</a>. The one usually referred is called 
+	 	Binary Heap but there are many more variants of heaps and see this notes for time 
+	 	complexity comparisons <a href="http://www.eecs.wsu.edu/~ananth/CptS223/Lectures/heaps.pdf">link</a>.</p>
+
+<pre><code>
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+
+// Divide and Conquer
+class Solution {
+public:
+    ListNode* mergeKLists(vector&lt;ListNode*&gt; &lists) {
+        if (lists.size() == 0) return NULL;
+        int n = lists.size();
+        while (n > 1) {
+            int k = (n + 1) / 2;
+            for (int i = 0; i < n / 2; ++i) {
+                lists[i] = mergeTwoLists(lists[i], lists[i + k]);
+            }
+            n = k;
+        }
+        return lists[0];
+    }
+    
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* head = new ListNode(-1);
+        ListNode* cur = head;
+        while (l1 && l2) {
+            if (l1->val < l2->val) {
+                cur->next = l1;
+                l1 = l1->next;
+            } else {
+                cur->next = l2;
+                l2 = l2->next;
+            }
+            cur = cur->next;
+        }
+        if (l1) cur->next = l1;
+        if (l2) cur->next = l2;
+        return head->next;
+    }   
+};
+
+// priority queue
+struct cmp {
+    bool operator () (ListNode* a, ListNode* b) {
+        return a->val > b->val;
+    }
+};
+
+struct great {
+    bool operator () (int a, int b) {
+        return a > b;
+    }
+};
+
+class Solution {
+public:
+    ListNode* mergeKLists(vector&lt;ListNode*&gt;& lists) {
+        // first 10 lines are not related to question itself....
+        vector<int> m{2, 5, 2, 3, 4};
+        /*struct great {
+            bool operator () (int a, int b) {
+                return a > b;
+            }
+        }great;
+        sort(m.begin(), m.end(), great);*/
+        sort(m.begin(), m.end(), great());
+        for (int i = 0; i < m.size(); ++i) {
+            cout << m[i] << " ";
+        }
+
+
+        priority_queue&lt;ListNode*, vector&lt;ListNode*&gt;, cmp&gt; pq;
+        for (int i = 0; i < lists.size(); ++i) {
+            if (lists[i]) {
+                pq.push(lists[i]);
+            }
+        }
+        ListNode* head = nullptr;
+        ListNode* pre = nullptr;
+        while (!pq.empty()) {
+            ListNode* tmp = pq.top();
+            pq.pop();
+            if (!head) {
+                head = tmp;
+            }
+            else {
+                pre->next = tmp;
+            }
+            pre = tmp;
+            if (tmp->next) {
+                pq.push(tmp->next);
+            }
+            
+        }
+        return head;       
+    }
+};
+</pre></code>	
+	</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 81. Search in Rotated Sorted Array II</h3>
+		<h4>Posted on Sep 8, 2017</h4>
+<br>
+<p>The main difference this question and previous question is that this may contain duplicates. 
+Therefore, one should consider cases when duplicate affect the decision whether left or right
+subsequence is increasing. Consider $[3, 1, 1]$ and $[1, 1, 3, 1]$, one can see that
+it is impossible to tell when $nums[mid] = nums[right]$, but we do know that nums[right] is not
+the target we want, therefore, we can simply by removing the right-most element and
+trim into a smaller subsequence which has a deterministic relationship between
+nums[mid] and nums[right] without affecting the final answer. If every element is exactly the
+same, then we have $O(n)$ time complexity instead of $O(log(n))$ and this is the best we can do.</p>
+
+<pre><code>
+class Solution {
+public:
+    bool search(vector&lt;int&gt; nums, int target) {
+        int n = nums.size();
+        if (n == 0) return false;
+        int left = 0, right = n - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                return true;
+            }
+            // consider [3, 1, 1] and [1, 1, 3, 1]
+            if (nums[mid] == nums[right]) {
+                --right;
+            } else if (nums[mid] > nums[right]) {
+                // [4, 5, 6, 7, -1, 0, 1, 2]
+                // left side is increasing
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            } else {
+                // [4, 5, 6, -2, -1, 0, 1, 2]
+                // right side is increasing
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }     
+            }
+        }
+        return false;
+    }
+};
+</pre></code>	
+	</div>
+</div>
+<br>
+<br>
+
 <div class="row">
 	<div class="col c12">
 		<h3>Leetcode 33. Search in Rotated Sorted Array</h3>
@@ -519,7 +703,7 @@ def binarySearch(nums, target):
 			right = mid 
 	print(left,right)
 	return -1
-</pre></code>   
+</code></pre>  
 <p>As one may wonder, why is this "in-bound" property useful in practice? It is not particularly useful for finding exact match but it is very very useful for finding lowerbound or upperbound of array. For $[1,6,6,6,8,10]$, I want to find the largest index of element out of those which are smaller than or equal to the target value. To achieve this, I can simply modify my code to be the following: </p>
 <pre><code class="python"> 
 def binarySearch(nums, target):
@@ -538,7 +722,7 @@ def binarySearch(nums, target):
 		return right
 	else:
 		return left
-</pre></code> 
+</code></pre>
 <p>If one wants to find the largest index of element out of all which are smaller than the target,
 we should tweak the codes a little bit: just need to change last 4 lines of code to be more precise</p> 		
 <pre><code class="python"> 
@@ -558,7 +742,7 @@ def binarySearch(nums, target):
 		return right
 	else:
 		return left 
-</pre></code> 	
+</code></pre>	
 <h4>Do you feel this way it is much easier to memorize Binary Search Codes? </h4>
 <p>Similarly, to find the smallest index of element out of those which are larger than or equal to the target value, we should do the following:</p>
 <pre><code class="python"> 
