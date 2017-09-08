@@ -104,6 +104,169 @@ function topFunction() {
 
 <div class="row">
 	<div class="col c12">
+		<h3>Leetcode 33. Search in Rotated Sorted Array</h3>
+		<h4>Posted on Sep 8, 2017</h4>
+<br>
+<p>if value at mid is less than value at right, then it means the
+ right subsequence is increasing and we want to check if target 
+ is in this subsequence or not. If not, we go to left hand side.
+If value at mid is greater than the value at right, that means
+we have the left subsequence increasing. We should have different
+rules of checking if target value falls left or right hand side
+ for those two scenarios. </p>
+
+<pre><code>
+class Solution {
+public:
+    int search(vector&lt;int&gt;& nums, int target) {
+        if (nums.empty()) return -1;
+        if (nums.size() == 1) return (nums[0] == target) ? 0 : -1;
+        int left = 0, right = nums.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (nums[mid] < nums[right]) {
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            } else {
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1;
+                } else{
+                    left = mid + 1;
+                }
+            }
+        }
+        return -1;   
+    }
+};
+</pre></code>	
+	</div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 294. Flip Game II</h3>
+		<h4>Posted on Sep 4, 2017</h4>
+<br>
+<p>Pay attention: return true when there is a way to win (can win), and return false,
+when it must lose. Use private variable to speed-up (memorization). </p>
+
+<pre><code>
+class Solution {
+private:
+    unordered_map&lt;string, bool&gt; m;
+    
+public:
+    bool canWin(string s) {
+        if (s.size() <= 1) {
+     	    return false;
+       	}
+        if (m.find(s) != m.end()) {
+            return m[s];
+        }
+        for (int i = 0; i < s.size() - 1; ++i) {
+            if (s[i] == '+' && s[i + 1] == '+') {
+                s[i] = s[i + 1] = '-';
+                if (canWin(s)){
+                    m[s] = true;
+                } else {
+                    return true;
+                }
+                s[i] = s[i + 1] = '+';
+            }
+        } 
+        m[s] = false;
+        return false;
+    }
+};
+</pre></code>	
+	</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 293. Flip Game</h3>
+		<h4>Posted on Sep 4, 2017</h4>
+<br>
+<p>Very Straightforward. Use substr or simply change in place.</p> 
+
+<pre><code>
+class Solution {
+public:
+    vector&lt;string&gt; generatePossibleNextMoves(string s) {
+        vector&lt;string&gt; res;
+        int n = s.size();
+        if (n <= 1) return res;
+        for (int i = 0; i < n - 1; ++i) {
+            if (s[i] == '+' && s[i + 1] == '+') {
+                s[i] = '-';
+                s[i + 1] = '-';
+                //res.push_back(s.substr(0, i) + "--" + s.substr(i + 2));
+                res.push_back(s);
+                s[i] = '+';
+                s[i + 1] = '+';
+            }
+        }
+        return res;
+    }
+};
+</pre></code>	
+	</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 482. License Key Formatting</h3>
+		<h4>Posted on Sep 4, 2017</h4>
+<br>
+<p>Very Straightforward. Even easier in Python.</p> 
+
+<pre><code>
+class Solution {
+public:
+    string licenseKeyFormatting(string S, int K) {
+        string res = "";
+        int cnt = 0;
+        int n = S.size();
+        for (int i = n - 1; i >= 0; --i) {
+            char c = toupper(S[i]);
+            if (c == '-') {
+                continue;
+            }        
+            // use following when toupper() is not allowed    
+            //if (c >= 'a' && c <= 'z') c -= 32;
+            res.push_back(c);
+            if (++cnt % K == 0) {
+                res.push_back('-');
+            }           
+        }
+        if (!res.empty() && res.back() == '-') {
+            res.pop_back();
+        }
+        return string(res.rbegin(), res.rend());       
+    }
+};
+</pre></code>	
+	</div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+	<div class="col c12">
 		<h3>Leetcode 577. Employee Bonus</h3>
 		<h4>Posted on Sep 4, 2017</h4>
 <br>
@@ -157,11 +320,11 @@ class Solution {
 public:
     int maximumSwap(int num) {
         string num_s = to_string(num); 
-        vector<char> num_c;
+        vector&lt;char&gt; num_c;
         for (auto it = begin(num_s); it != end(num_s); ++it) {
             num_c.push_back(*it);
         }
-        vector<int> pos(10, -1);
+        vector&lt;int&gt; pos(10, -1);
         for (int i = 0; i < num_c.size(); ++i) {
             pos[num_c[i] - '0'] = i;
         } 
@@ -214,7 +377,7 @@ bool knows(int a, int b);
 class Solution {
 public:
     int findCelebrity(int n) {
-        vector<bool> candidate(n, true);
+        vector&lt;bool&gt; candidate(n, true);
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
                 if (candidate[i] && i != j) {
@@ -488,14 +651,14 @@ class Solution(object):
 </pre></code>
 <p>If you find the code above hard to understand, don't blame yourself. Because it is pretty hard to understand. It is actually a version after space optimization. Time complexity here is $O(n^2)$ and space is $O(n)$. The more straight forward one before optimization will be following and the recurrence equation is </p>
 <pre><code class = "cpp">
-bool canPartition(vector<int>& nums) {
+bool canPartition(vector&lt;int&gt;& nums) {
     int sum = accumulate(nums.begin(), nums.end(), 0);
     if(sum % 2 != 0){
         return false;
     }
     int target = sum / 2;
     int n = nums.size();
-    vector<vector<bool>> dp(n + 1, vector<bool>(target + 1, false));
+    vector&lt;vector&lt;bool&gt;&gt; dp(n + 1, vector&lt;bool&gt;(target + 1, false));
     //now we have to initialize the dp array
     for(int i = 1; i <= n; ++i){
         dp[i][0] = true;
@@ -778,6 +941,13 @@ public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
 			
 			
 			</p> 
+<pre><code>
+def poorPigs(self, buckets, minutesToDie, minutesToTest):
+    pigs = 0
+    while (minutesToTest / minutesToDie + 1) ** pigs < buckets:
+        pigs += 1
+    return pigs
+</pre></code>
 		</div>
 	</div>
 
