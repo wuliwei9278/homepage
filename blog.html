@@ -105,6 +105,138 @@ function topFunction() {
 
 <div class="row">
 	<div class="col c12">
+		<h3>Leetcode 535. Encode and Decode TinyURL</h3>
+		<h4>Posted on Sep 10, 2017</h4>
+<br>
+<p>Basically we want to use $62^6 = 56,800,235,584$ to represent all the URLs for
+	all the websites (1.6 billion as of 2016 so 6 digits are sufficient). To achieve this, first idea is to design a hashing function. One can use the codes below to avoid conflicts but it will be slow eventually,
+	because towards the end, it will be harder and harder to find approporiate shorturl.
+	Similar idea, one can use md5/sha1 which takes "longurl + timestamp" as key and regenerate
+	hash codes when there are conflicts. Of course, when data gets very large and exceed memory 
+	size of one machine, one should use distributed SQL or NoSQL database to store key-value pair.
+	(also depending on the peak QPS: Queries Per Second).
+</p>
+<p>See <a href="http://blog.csdn.net/hgl868/article/details/7057843">here</a> for more details on the
+use of rand(), and srand() to generate pseudo-random number.</p>
+
+<pre><code>
+class Solution {
+public:
+    Solution() {
+        dict = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        short2long.clear();
+        long2short.clear();
+        srand(time(nullptr));
+    }
+
+    // Encodes a URL to a shortened URL.
+    string encode(string longUrl) {
+        if (long2short.find(longUrl) != long2short.end()) {
+            return "http://tinyurl.com/" + long2short[longUrl];
+        }
+        int idx;
+        string randStr;
+        for (int i = 0; i < 6; ++i) {
+            randStr.push_back(dict[rand() % 62]);
+        }
+        while (short2long.find(randStr) != short2long.end()) {
+            randStr[idx] = dict[rand() % 62];
+            idx = (idx + 1) % 5;
+        }
+        short2long[randStr] = longUrl;
+        long2short[longUrl] = randStr;
+        return "http://tinyurl.com/" + randStr;
+    }
+
+    // Decodes a shortened URL to its original URL.
+    string decode(string shortUrl) {
+        string randStr = shortUrl.substr(shortUrl.rfind("/") + 1);
+        return short2long.find(randStr) == short2long.end() ? shortUrl : short2long[randStr];
+    }
+
+private:
+    string dict;
+    unordered_map&lt;string, string&gt; short2long, long2short; 
+};
+</code></pre>
+<h3>Leetcode 534. Design TinyURL</h3>
+<p>The second way is to create a one-to-one mapping between base10 and base62. One can simply use base10/base62 as primary keys and longURL as values in SQL databases. 
+	We can increment the counter by 1 when a new
+link is added. When we want to add links distributedly, we can assign counter quota in advance to each machine (creating mapping in advance but leave value field empty) and then fill them out. For 
+more details on System Design, see this <a href="https://discuss.leetcode.com/topic/95853/a-complete-solution-for-tinyurl-leetcode-system-design/2">post</a>. In this kind of question,
+one should first be clear about the purpose (e.g. indexing pages in advance or on the fly) 
+by asking. Then one should figure out how many users, work load, QPS, read-write speed (read
+heavy or write heavy), and figure out
+which database to use (SQL vs NoSQL, row vs column, single machine vs distributed DB). 
+And design system algorithms (e.g. here is URLService class, including encode and decode API).
+One can further optimize using DB sharding (not only horizontal partitioning but
+also data replication) and cache server.</p>
+<pre><code>
+public class URLService {
+    HashMap&lt;String, Integer&gt; ltos;
+    HashMap&lt;Integer, String&gt; stol;
+    static int COUNTER;
+    String elements;
+    URLService() {
+        ltos = new HashMap&lt;String, Integer&gt;();
+        stol = new HashMap&lt;Integer, String&gt;();
+        COUNTER = 1;
+        elements = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    public String longToShort(String url) {
+        String shorturl = base10ToBase62(COUNTER);
+        ltos.put(url, COUNTER);
+        stol.put(COUNTER, url);
+        COUNTER++;
+        return "http://tiny.url/" + shorturl;
+    }
+    public String shortToLong(String url) {
+        url = url.substring("http://tiny.url/".length());
+        int n = base62ToBase10(url);
+        return stol.get(n);
+    }
+    
+    public int base62ToBase10(String s) {
+        int n = 0;
+        for (int i = 0; i < s.length(); i++) {
+            n = n * 62 + convert(s.charAt(i));
+        }
+        return n;
+        
+    }
+    public int convert(char c) {
+        if (c >= '0' && c <= '9')
+            return c - '0';
+        if (c >= 'a' && c <= 'z') {
+            return c - 'a' + 10;
+        }
+        if (c >= 'A' && c <= 'Z') {
+            return c - 'A' + 36;
+        }
+        return -1;
+    }
+    public String base10ToBase62(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n != 0) {
+            sb.insert(0, elements.charAt(n % 62));
+            n /= 62;
+        }
+        while (sb.length() != 6) {
+            sb.insert(0, '0');
+        }
+        return sb.toString();
+    }
+}
+</code></pre>
+	</div>
+</div>
+<br>
+<br>
+
+
+
+<div class="row">
+	<div class="col c12">
 		<h3>Leetcode 23. Merge k Sorted Lists</h3>
 		<h4>Posted on Sep 8, 2017</h4>
 <br>
@@ -114,7 +246,7 @@ function topFunction() {
 	 custom operator (in C++, default is std:less, and default is max heap for priority 
 	 queue, sorting order is increasing by fault). One can use functor for sort too but one should
 	 use cmp() instead of cmp. </p>
-	 <p>Advantage of C++ over Python in interview is that one can easily use min-heap by <pre><code>priority_queue<int, vector<int>, greater<int>> Q; </code></pre></p>
+	 <p>Advantage of C++ over Python in interview is that one can easily use min-heap by <pre><code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; Q; </code></pre></p>
 	 <p>For the question itself, there are two ways of solving this question. One is divide and 
 	 	conquer: merge 2 lists at one time, and do it from bottom-up approach. The other is use
 	 	extra space to store first node for each linked-list. Both approaches have the same time complexity: $O(n \ k \ log(k))$, where $n$ is average number of nodes in a list and $k$
@@ -136,7 +268,7 @@ function topFunction() {
 // Divide and Conquer
 class Solution {
 public:
-    ListNode* mergeKLists(vector&lt;ListNode*&gt; &lists) {
+    ListNode* mergeKLists(vector&lt;ListNode*&gt;& lists) {
         if (lists.size() == 0) return NULL;
         int n = lists.size();
         while (n > 1) {
@@ -618,6 +750,61 @@ public:
 			</p> 
 			<p>This <a href="http://epubs.siam.org/doi/pdf/10.1137/1.9781611973198.6">paper</a> talks about the cache effects on Multi-Pivot Quicksort. 3-way or 4-way is better than 2-way pivot 
 				due to cache performance</p>
+			<p>See <a href="http://en.cppreference.com/w/cpp/algorithm/nth_element">std::nth_element</a> for the built-in function in C++ STL.</p>
+			<p>For more details in the quickSelect implementation, see the codes below. By the way, quickSort is the same codes, except that we do not need to return $k-th$ element and 
+				we can simply sort in-place. Basically, there is no need to pass $k$ in the
+				function parameter. </p>
+<pre><code>
+#include &lt;iostream&gt;
+using namespace std;
+
+// A simple print function
+void print(int* input) {   
+    for (int i = 0; i < sizeof(input)/sizeof(*input); i++)
+        cout << input[i] << " ";
+    cout << endl;
+}
+
+int partition(int* input, int p, int r) {   
+    int pivot = input[r];
+    while ( p < r ) {
+        while (input[p] <= pivot)
+            p++;
+        while (input[r] > pivot)
+            r--;
+        // now we have input[p] > pivot && input[r] <= pivot
+        // we need to swap values at p and r if p < r
+        if (p < r) {
+            int tmp = input[p];
+            input[p] = input[r];
+            input[r] = tmp;
+        }
+    }
+    return r;
+}
+
+int quick_select(int* input, int p, int r, int k) {
+    if (p == r ) return input[p];
+    int j = partition(input, p, r);
+    int length = j - p + 1;
+    if (length == k) return input[j];
+    else if (k < length) return quick_select(input, p, j - 1, k);
+    else return quick_select(input, j + 1, r, k - length);
+}
+
+int main() {
+    int A1[] = { 100, 400, 300, 500, 200 };
+    cout << "1st order element " << quick_select(A1, 0, 4, 1) << endl;
+    int A2[] = { 100, 400, 300, 500, 200 };
+    cout << "2nd order element " << quick_select(A2, 0, 4, 2) << endl;
+    int A3[] = { 100, 400, 300, 500, 200 };
+    cout << "3rd order element " << quick_select(A3, 0, 4, 3) << endl;
+    int A4[] = { 100, 400, 300, 500, 200 };
+    cout << "4th order element " << quick_select(A4, 0, 4, 4) << endl;
+    int A5[] = { 100, 400, 300, 500, 200 };
+    cout << "5th order element " << quick_select(A5, 0, 4, 5) << endl;
+}
+</code></pre>
 		</div>
 	</div>
 
@@ -1171,10 +1358,27 @@ def poorPigs(self, buckets, minutesToDie, minutesToTest):
 
 	<div class="row">
 		<div class="col c12">
+			<h3>Notes on Sharding, Consistent Hashing</h3>
+			<h4>Posted on Sept 9th, 2017</h4> 
+			<p>This <a href="https://medium.com/@jeeyoungk/how-sharding-works-b4dec46b3f6">article</a> gives great introduction on database sharding. Sharding has horizontal and vertical two ways. Vertical means split tables into serveral tables but this is difficult and
+				requires domain knowledge while horizontal means split rows (regions in HBase) and
+				put regions into different physical nodes. "Consistent hashing is a special kind of hashing such that when a hash table is resized, only $K/n$ keys need to be remapped on average, where $K$ is the number of keys, and $n$ is the number of slots", accoring to wikipedia. It is used to ensure scalability and availability for
+				data.</p>
+				<p><a href="https://en.wikipedia.org/wiki/MD5">MD5</a> and <a href="https://en.wikipedia.org/wiki/SHA-1">SHA-1</a> are two widely used hash functions for 
+					cryptographic uses. See here for comparsion with <a href="http://automationrhapsody.com/md5-sha-1-sha-256-sha-512-speed-performance/">SHA-256 and SHA-512.</a> Althoughly not directly realted, history of <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Encryption">RSA</a> is fun to look at.</p>
+
+		</div>
+	</div>
+
+	<br>
+	<br>
+
+	<div class="row">
+		<div class="col c12">
 			<h3>Notes on System Design</h3>
 			<h4>Posted on July 19th, 2017</h4> 
 			<p>What I found it interesting is that about a few months ago, I have no idea what I am reading when I first read these two articles: <a href="http://www.1point3acres.com/bbs/thread-210147-1-1.html">article 1</a> and <a href="http://www.1point3acres.com/bbs/thread-208829-1-1.html">article 2</a>, but after I started working in the clouds team, all of sudden I got a good grasp and interest in system design. This is pretty fascinating. For example, the log data I have with which I use to build an aduit tool for database can be thought as an infrastructure way to get to eventual consistency for the distributed database.</p>
-			<p> Three important requirements for designing distributed systems: <a href="http://ksat.me/a-plain-english-introduction-to-cap-theorem/">CAP</a>: Consistency, Availability, Partition Tolerance. Also see <a href="https://www.slideshare.net/seldo/distributed-systems-and-consistency">this slide</a> for more details. Some very basic concepts can be found here: <a href="http://ninefu.github.io/blog/Harvard_CS75_Notes/">notes.</a> Some basic facts on latency: <a href="https://gist.github.com/jboner/2841832">access time</a>(Warning: this could be out of date in a couple of years.) </p>
+			<p> Three important requirements for designing distributed systems: <a href="http://ksat.me/a-plain-english-introduction-to-cap-theorem/">CAP</a>: Consistency, Availability, Partition Tolerance. Also see <a href="https://www.slideshare.net/seldo/distributed-systems-and-consistency">this slide</a> and <a href="https://github.com/henryr/cap-faq">here</a> for more details. Some very basic concepts can be found here: <a href="http://ninefu.github.io/blog/Harvard_CS75_Notes/">notes.</a> Some basic facts on latency: <a href="https://gist.github.com/jboner/2841832">access time</a>(Warning: this could be out of date in a couple of years.) </p>
 
 		</div>
 	</div>
@@ -1187,6 +1391,7 @@ def poorPigs(self, buckets, minutesToDie, minutesToTest):
 			<h3>Try RestAPI</h3>
 			<h4>Posted on July 19th, 2017</h4> 
 			<p> <a href="https://dev.twitter.com/rest/public"> REST APIs for twitter</a>. Give it a try for fun later when I have more time. </p>
+			<p>Also Google's URL Shortener: <a href="https://developers.google.com/url-shortener/v1/getting_started#actions">here</a> and it also uses a REST-style JSON protocol.</p>
 		</div>
 	</div>
 
