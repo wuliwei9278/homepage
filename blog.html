@@ -102,12 +102,230 @@ function topFunction() {
 <br>
 <br>
 
+
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 549. Binary Tree Longest Consecutive Sequence II</h3>
+		<h4>Posted on Sep 18, 2017</h4>
+<br>
+<p>Recursion for Binary Tree.</p>
+
+<pre><code> 
+class Solution {
+public:
+    int longestConsecutive(TreeNode* root) {
+        if (!root) {
+            return 0;
+        }
+        int res = 0;
+        res = helper(root, 1) + helper(root, -1) + 1;
+        return max(res, max(longestConsecutive(root->left), longestConsecutive(root->right)));
+    }
+
+private:
+    int helper(TreeNode* root, int diff) {
+        if (!root) {
+            return 0;
+        }
+        int left = 0, right = 0;
+        if (root->left && root->left->val == root->val + diff) {
+            left = 1 + helper(root->left, diff);
+        }
+        if (root->right && root->right->val == root->val + diff) {
+            right = 1 + helper(root->right, diff);
+        }
+        return max(left, right);
+    }
+};
+</code></pre>
+	</div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 298. Binary Tree Longest Consecutive Sequence</h3>
+		<h4>Posted on Sep 18, 2017</h4>
+<br>
+<p>Recursion for Binary Tree.</p>
+
+<pre><code> 
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+class Solution {
+public:
+    int longestConsecutive(TreeNode* root) {
+        if (!root) return 0;
+        int res = 0;
+        dfs(root, 1, res);
+        return res;
+    }
+
+private:
+    void dfs(TreeNode* root, int len, int& res) {
+        res = max(res, len);
+        if (root->left) {
+            if (root->left->val == root->val + 1) {
+                dfs(root->left, len + 1, res);
+            } else {
+                dfs(root->left, 1, res);
+            }
+        }
+        if (root->right) {
+            if (root->right->val == root->val + 1) {
+                dfs(root->right, len + 1, res);
+            } else {
+                dfs(root->right, 1, res);
+            }
+        }
+    }
+};
+
+class Solution {
+public:
+    int longestConsecutive(TreeNode* root) {
+        return helper(root, nullptr, 0);
+    }
+    
+private:
+    int helper(TreeNode* root, TreeNode* p, int res) {
+        if (!root) return res;
+        res = (p && root->val == p->val + 1) ? res + 1 : 1;
+        return max(res, max(helper(root->left, root, res), helper(root->right, root, res)));
+    }
+};
+</code></pre>
+	</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 296. Best Meeting Point</h3>
+		<h4>Posted on Sep 18, 2017</h4>
+<br>
+<p>Consider one dimension first. Then one will realize the median of an odd sequence or any value
+following in between middle two values of an even sequence are the results. Similarly, for 
+higher dimensions, we can consider each dimension one by one.</p>
+
+<pre><code> 
+class Solution {
+public:
+    int minTotalDistance(vector&lt;vector&lt;int>>& grid) {
+        vector&lt;int> rows, cols;
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 1) {
+                    rows.push_back(i);
+                    cols.push_back(j);
+                }
+            }
+        }
+        return minTotalDistance(rows) + minTotalDistance(cols);
+    }
+
+private:
+    int minTotalDistance(vector&lt;int>& v) {
+        sort(v.begin(), v.end());
+        int res = 0, i = 0, j = v.size() - 1;
+        while (i < j) {
+            res += (v[j--] - v[i++]);
+        }
+        return res;
+    }
+};
+</code></pre>
+	</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+	<div class="col c12">
+		<h3>Leetcode 317. Shortest Distance from All Buildings</h3>
+		<h4>Posted on Sep 18, 2017</h4>
+<br>
+<p>BFS using queue. We need to do BFS every time we have a building to create a 
+distance matrix for that building. Then we have a cumulative matrix of distances
+for all buildings. We just need to find the minimum number in that cumulative matrix.
+Also, need visited bool matrix to avoid adding same node twice in the queue and a
+cnt matrix to count how many buildings can be reached.</p>
+
+<pre><code> 
+class Solution {
+public:
+    int shortestDistance(vector&lt;vector&lt;int>>& grid) {
+        int buildingCnt = 0, m = grid.size(), n = grid[0].size();
+        vector&lt;vector&lt;int>> dist(m, vector&lt;int>(n, 0)), cnt = dist;
+        vector&lt;vector&lt;int>> dirs{{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    ++buildingCnt;
+                    queue&lt;pair&lt;int, int>> q;
+                    q.push({i, j});
+                    int level = 1;
+                    vector&lt;vector&lt;bool>> visited(m, vector&lt;bool>(n, false));
+                    while (!q.empty()) {
+                        int size = q.size();
+                        for (int s = 0; s < size; ++s) {
+                            int a = q.front().first, b = q.front().second;
+                            q.pop();
+                            for (auto dir : dirs){
+                                int x = a + dir[0], y = b + dir[1];
+                                if (x >= 0 && x < m && y >= 0 && y < n 
+                                        && grid[x][y] == 0 && visited[x][y] == false) {
+                                    visited[x][y] = true;
+                                    dist[x][y] += level;
+                                    cnt[x][y] += 1;
+                                    q.push({x, y});
+                                }
+                            }
+                        }
+                        ++level;
+                    }     
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 0 && cnt[i][j] == buildingCnt) {
+                    res = min(res, dist[i][j]);
+                }
+            }
+        }
+        return (res == INT_MAX) ? -1 : res;
+    }
+};
+</code></pre>
+	</div>
+</div>
+<br>
+<br>
+
+
 <div class="row">
 	<div class="col c12">
 		<h3>Leetcode 542. 01 Matrix</h3>
 		<h4>Posted on Sep 17, 2017</h4>
 <br>
-<p>BFS using queue. Starting from any 0 point. </p>
+<p>BFS using queue. Starting from any 0 point. The reason that we do not 
+need additional visisted boolean matrix here is that we have the condition
+that matrix[x][y] > matrix[t.first][t.second] to prevent one node being added
+twice.</p>
 
 <pre><code> 
 class Solution {
@@ -2029,7 +2247,18 @@ public:
 
 
 
+	<div class="row">
+		<div class="col c12">
+			<h3>Number of Questions on Leetcode growing exponentially.... </h3>
+			<h4>Posted on Sept 18, 2017</h4>
+			<p> In 2014, there are only around 150 questions...now there are over 600, almost 700 
+			questions.. I remember when I started in 2015, it is around 300.
+			Oh, I miss the old times... </p>
+		</div>
+	</div>
 
+	<br>
+	<br>
 
 
 
@@ -2039,7 +2268,7 @@ public:
 	<div class="row">
 		<div class="col c12">
 			<h3>Between Uncle Sam's birthday and My birthday</h3>
-			<h4>Posted on July 5th, 2017</h4>
+			<h4>Posted on July 5, 2017</h4>
 			<p> I never realized that my birthday is so close to Uncle Sam's, well, probably because for past few years, I was never around at this time of the year in America. </p>
 		</div>
 	</div>
