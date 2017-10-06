@@ -103,6 +103,261 @@ function topFunction() {
 <br>
 
 
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 291. Word Pattern II</h3>
+        <h4>Posted on Oct 05, 2017</h4>
+<br>
+<p> This question is much harder than 290. Word Pattern despite the only difference it removes the space between words. What makes it hard is that now we don't know where does one word, where does one end. In this kind of scenario, one should use backtracking. I used set for the same reason as previous question. The beginning of 
+    helper function is what I called "ending conditions" and recursion logic is buried in the foor loop (there are two separate cases for each potential word: either in hashtable or not). One should deal with those two cases
+    separately.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    bool wordPatternMatch(string pattern, string str) {
+        unordered_map&lt;char, string> m;
+        set&lt;string> s;
+        return helper(pattern, 0, str, 0, m, s);
+    }
+    
+    bool helper(string& pattern, int p1, string& str, int p2, unordered_map&lt;char, string>& m, set&lt;string>& s) {
+        if (p1 == pattern.size() && p2 == str.size()) {
+            return true;
+        }
+        if (p1 == pattern.size() || p2 == str.size()) {
+            return false;
+        }
+        char c = pattern[p1];
+        for (int i = p2; i < str.size(); ++i) {
+            string word = str.substr(p2, i - p2 + 1);
+            if (m.find(c) != m.end()) {
+                if (m[c] == word) {
+                    return helper(pattern, p1 + 1, str, i + 1, m, s);
+                }
+            } else {
+                if (s.find(word) != s.end()) {
+                    continue;
+                }
+                m[c] = word;
+                s.insert(word);
+                if (helper(pattern, p1 + 1, str, i + 1, m, s)) {
+                    return true;
+                }
+                m.erase(c);
+                s.erase(word);
+            }
+        }
+        return false;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 290. Word Pattern</h3>
+        <h4>Posted on Oct 05, 2017</h4>
+<br>
+<p> Just realized there is no need to use two unordered_map. Can simply use one. Well, it is a trade-off between space and time.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    bool wordPattern(string pattern, string str) {
+        unordered_map&lt;char, string> m;
+        istringstream in(str);
+        int i = 0;
+        for (string word; in >> word; ++i) {
+            char c = pattern[i];
+            if (m.find(c) != m.end()) {
+                if (m[c] != word)
+                    return false;
+            } else {
+                for (auto it = m.begin(); it != m.end(); ++it) {
+                    if (it->second == word)
+                        return false;
+                }
+                m[c] = word;
+            }
+        }
+        return i == pattern.size();
+    }
+};
+
+
+class Solution {
+public:
+    bool wordPattern(string pattern, string str) {
+        unordered_map&lt;char, string> m;
+        // use set to avoid traversing the m, but uses more space
+        set&lt;string> s;
+        istringstream in(str);
+        int i = 0;
+        for (string word; in >> word; ++i) {
+            char c = pattern[i];
+            if (m.find(c) != m.end()) {
+                if (m[c] != word)
+                    return false;
+            } else {
+                /*for (auto it = m.begin(); it != m.end(); ++it) {
+                    if (it->second == word)
+                        return false;
+                }*/
+                if (s.count(word)) {
+                    return false;
+                }
+                m[c] = word;
+                s.insert(word);
+            }
+        }
+        return i == pattern.size();
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 362. Design Hit Counter</h3>
+        <h4>Posted on Oct 05, 2017</h4>
+<br>
+<p> I think the main difficult lies in the follow-up questions: <b>What if the number of hits per second could be very large? Does your design scale?</b>
+</p>
+<p> I think in a real interview, that is the kind of questions you should bring it up to the interview before you are asked. It is quite likely that there are thousands if not millions of hits each second. One may wish to use long or long long instead of int below to avoid overflow issues. since $2^32 - 1 = 4,294,967,295$, it is not that a large number. Overflow could happen when we don't have 300 seconds but a lot more granularities. maybe 300 * 60 ms. Also try not use 300 directly in the codes, define a constant number instead. The algorithm side, using a bucket of 300 is quick smart, definitely smarter than using a queue and returning the size of queue as the result. Since the size of queue could be very large and that is simply a waste of memory when you don't need to store the exact timestamp (same here) many many times. It could easily lead to memory issues when scaling up. Therefore, one should never do that in practice. Instead the requirement says that you need to keep the history, then you should write it to a database/disk for every second query results. I think more likely case is that not only hits are useful but also the hit comes with other useful information and those information usually is written to database. One may wish to access those later. (a need to record the hits id within past 300 seconds). One just need to add a vector&lt;vector&lt;int>> to store those.</p>
+
+<pre><code> 
+class HitCounter {
+public:
+    /** Initialize your data structure here. */
+    HitCounter() {
+        times.resize(300, 0);
+        hits.resize(300, 0);
+    }
+    
+    /** Record a hit.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    void hit(int timestamp) {
+        int idx = timestamp % 300;
+        if (times[idx] == timestamp) {
+            hits[idx]++;
+        } else {
+            times[idx] = timestamp;
+            hits[idx] = 1;
+        }
+        return;
+    }
+    
+    /** Return the number of hits in the past 5 minutes.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    int getHits(int timestamp) {
+        int res = 0;
+        for (int i = 0; i < NUM_BUCKETS; ++i) {
+            // the line below is not needed of there are hits every second
+            if (timestamp - times[i] < 300) {
+                res += hits[i];
+            }
+        }
+        return res;
+    }
+    
+private:
+    int NUM_BUCKETS = 300;
+    // record timestamp for past 300 seconds
+    vector&lt;int> times;
+    // record how many hits for past 300 seconds
+    vector&lt;int> hits;
+    
+};
+
+/**
+ * Your HitCounter object will be instantiated and called as such:
+ * HitCounter obj = new HitCounter();
+ * obj.hit(timestamp);
+ * int param_2 = obj.getHits(timestamp);
+ */
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 609. Find Duplicate File in System</h3>
+        <h4>Posted on Oct 05, 2017</h4>
+<br>
+<p>Use of Hashmap. I feel whenever one is dealing with string, it is much easier to do so using Python. 
+Here, we don't have to use dfs or bfs, since the paths have been given. Those follow up questions are quite
+interesting: 
+<ul id="black">
+  <li>1. Imagine you are given a real file system, how will you search files? DFS or BFS?</li>
+  <li>2. If the file content is very large (GB level), how will you modify your solution?</li>
+  <li>3. If you can only read the file by 1kb each time, how will you modify your solution?</li>
+  <li>4. What is the time complexity of your modified solution? What is the most time-consuming part and memory consuming part of it? How to optimize?</li>
+  <li>5. How to make sure the duplicated files you find are not false positive?</li>
+</ul>  
+My understandings are:
+<ul id="black">
+  <li>1. In real life, one may want to use dfs over bfs when the search is deep, since bfs uses much more memory than
+dfs. BFS may have better cache performance, due to locality of files on disk. But if you know the files you are searching for is close to the node you are currently at, then BFS may be performing better. </li>  
+<li> 2. It is not possible to hash the entire contents as what the codes did below. Instead, one should
+first map files accoring to file size, for the files of same size, hash a small part of file using MD5 for example.
+Only when all those are the same, we will compare byte by byte.</li>
+<li> 3. We can still hash 1k chunk similarly.</li>
+<li>4. Worst time complexity is $O(n^2 * k)$, when all files have the same size k bytes, and we have to compare every two files byte by byte.</li>
+<li>5. file size, hash, byte by byte as last sanity check.</li>
+</ul> 
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;vector&lt;string>> findDuplicate(vector&lt;string>& paths) {
+        unordered_map&lt;string, vector&lt;string>> files;
+        vector&lt;vector&lt;string>> res;
+        for (auto path : paths) {
+            stringstream ss(path);
+            string root;
+            string s;
+            getline(ss, root, ' ');
+            while (getline(ss, s, ' ')) {
+                string filename = root + '/' + s.substr(0, s.find('('));
+                string filecontent = s.substr(s.find('(') + 1, s.find(')') - s.find('(') - 1);
+                files[filecontent].push_back(filename);
+            }
+        }
+        
+        for (auto it = files.begin(); it != files.end(); ++it) {
+            if ((it->second).size() > 1) {
+                res.push_back(it->second);
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
 
 <div class="row">
 	<div class="col c12">
@@ -2242,7 +2497,17 @@ public:
 	<br>
 
 
+    <div class="row">
+        <div class="col c12">
+            <h3>One article I found interesting </h3>
+            <h4>Posted on Oct 05, 2017</h4>
+            <p> <a href="http://www.pgbovine.net/PhD-overview.htm">Article</a> talks about some facts on PhD program. I thoght it would be interesting to people to who want to pursue PhD in the future. I found what he said in the end to be quite interesting: </p>
+             <p>   "The students who excel at playing the “Ph.D. game” are those who are able to figure out how to pursue research that they personally find interesting but that can also appeal to their advisors, grant agencies, and paper reviewers. I hesitate to give a single blanket definition of “success” for a Ph.D. student, but if I had to give one, I would define success as being able to pursue your own research interests as much as possible while still being able to convince the three to five professors on your thesis committee to let you graduate."</p>
+        </div>
+    </div>
 
+    <br>
+    <br>
 
 
 
