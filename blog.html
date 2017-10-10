@@ -105,6 +105,245 @@ function topFunction() {
 
 <div class="row">
     <div class="col c12">
+        <h3>Summary of Commonly Used C++ Syntax for Leetcode</h3>
+        <h4>Posted on Oct 09, 2017</h4>
+<br>
+<p> Since I am so used to searching everything whenever I need them, I think it may be a good idea
+    to summarize what I have used so far in Leetcode.
+</p>
+
+<pre><code> 
+// Array
+int numbers[]={20,40,50,10,30};
+sort (numbers, numbers+5, std::greater<int>());
+int cx = std::count_if (numbers, numbers+5, std::bind2nd(std::greater_equal<int>(),0));
+int a = 5, b = 3;
+swap(a, b);
+
+// Vector
+vector&lt;vector&lt;bool>> dp(m + 1, vector&lt;bool>(n + 1, false));    // how to initialize two-dim vector
+vector&lt;int> v(3,100);
+size_t len = v.size();
+v.push_back(100);
+v.pop_back();
+// one can use auto in c++11, and insert is not good for vector, use list
+vector&lt;int>::iterator it = v.begin();
+it = v.insert(it, 200);
+
+// pair
+pair&lt;string, double> product("tomatoes",2.30);
+product.first = "shoes";                  
+product.second = 39.90;
+pair&lt;int,int> foo;
+product = make_pair(10,20);
+
+// list 
+list&lt;int> l1(4, 100);
+list&lt;int> mylist1;
+for (int i = 1; i <= 5; ++i) 
+    mylist1.push_back(i);     // mylist1: 1 2 3 4 5
+mylist1.erase(mylist1.end());
+// same as mylist1.pop_back();    // mylist1: 1 2 3 4
+// see push_back(100), pop_back(), push_front(100), pop_front()
+list&lt;int> l2{10, 20, 30};     // mylist2: 10 20 30
+auto it = mylist1.begin();
+advance(it, 1);
+mylist1.splice (it, mylist2);   // mylist1: 1 10 20 30 2 3 4
+                                // mylist2: empty
+                                // "it" still points to 2 (the 5th element)
+mylist2.splice (mylist2.begin(),mylist1, it);
+                                // mylist1: 1 10 20 30 3 4
+                                // mylist2: 2
+                                // "it" is now invalid.   
+// set and unordered_set
+
+// unordered_map
+
+
+// stack
+stack&lt;int> mystack;
+mystack.push(10);
+mystack.push(20);
+mystack.top() -= 5;
+mystack.pop();
+
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 336. Palindrome Pairs</h3>
+        <h4>Posted on Oct 09, 2017</h4>
+<br>
+<p> The use of hashtable is quite straightforward. But the use of set here is quite smart. Instead of unordered_set, set keeps the order of length of each word in the set, therefore we only need to iterate the iterator from s.begin() to s.find(len_w), since we only need to consider word of length less than current word. 
+Other than the use of set, the other part worth paying attension is that there are three different cases: 'abd|dba', 'abdd|ba', 'ab|ddba' for current word of 'abd','abdd' and 'ddba'.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;vector&lt;int>> palindromePairs(vector<string>& words) {
+        vector&lt;vector&lt;int>> res;
+        unordered_map&lt;string, int> m;
+        set&lt;int> s;
+        for (int i = 0; i < words.size(); ++i) {
+            m[words[i]] = i;
+            s.insert(words[i].size());
+        }
+        for (int i = 0; i < words.size(); ++i) {
+            string word = words[i];
+            reverse(word.begin(), word.end());
+            if (m.find(word) != m.end() && m[word] != i) {
+                res.push_back({i, m[word]});
+            }
+            int len_w = word.size();
+            for (auto it = s.begin(); it != s.find(len_w); ++it) {
+                // len_it is the length of candidate string
+                int len_it = *it;
+                // deal with left substring of reversed word is valid palindrome
+                if (isValid(word, 0, len_w - len_it - 1) && m.count(word.substr(len_w - len_it))) {
+                    res.push_back({i, m[word.substr(len_w - len_it)]});
+                }
+                // deal with right substring of reversed word is valid palindrome  
+                if (isValid(word, len_it, len_w - 1) && m.count(word.substr(0, len_it))) {
+                    res.push_back({m[word.substr(0, len_it)], i});
+                }     
+            }
+        }
+        return res;
+    }
+    
+    bool isValid(string str, int left, int right) {
+        while (left < right) {
+            if (str[left++] != str[right--]) {
+                return false;
+            } 
+        }
+        return true;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 680. Valid Palindrome II</h3>
+        <h4>Posted on Oct 09, 2017</h4>
+<br>
+<p> It is an easy question but I want to emphasize that writing an additional helper function isValid
+    makes the main function much easier to read and I belive readibility is very very important when
+    writing C++ codes. (I don't know why but it seems that I made less stupid mistakes when I write
+    in C++ compared to in Python, is it due to the type systems?).
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    bool validPalindrome(string s) {
+        int left = 0;
+        int right = s.size() - 1;
+        while (left < right) {
+            if (s[left] != s[right]) {
+                return isValid(s, left + 1, right) || isValid(s, left, right - 1);
+            } else {
+                ++left;
+                --right;
+            }
+        }
+        return true;
+    }
+    
+    bool isValid(string s, int left, int right) {
+        while (left < right) {
+            if (s[left] != s[right]) {
+                return false;
+            } else {
+                ++left;
+                --right;
+            }
+        }
+        return true;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 651. 4 Keys Keyboard</h3>
+        <h4>Posted on Oct 09, 2017</h4>
+<br>
+<p> This question is also about using dynamic programming. Similar idea as previous question.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int maxA(int N) {
+        vector&lt;int> dp(N + 1, 0);
+        for (int i = 1; i < N + 1; ++i) {
+            dp[i] = i;
+            for (int j = 1; j < i; ++j) {
+                dp[i] = max(dp[i], dp[j] * (i - j - 1));
+            }
+        }
+        return dp[N];
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 650. 2 Keys Keyboard</h3>
+        <h4>Posted on Oct 09, 2017</h4>
+<br>
+<p> This question is about using dynamic programming. The most important thing for dp is that one
+    needs to find the recursive relationships. Here, the recursive equation is dp[i] = min(dp[i], dp[j]
+    + i / j) when i % j == 0. The reason for this, when j is a divisor of i, we can simply copy (1 time) and paste (i / j - 1 times), and in total i / j times to obtain the final result. One can also use recursiion
+    to solve dp questions most of time but lead to a suboptimal time complexity.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int minSteps(int n) {
+        vector&lt;int> dp(n + 1, 0);
+        for (int i = 2; i < n + 1; ++i) {
+            dp[i] = i;
+            for (int j = 2; j < i; ++j) {
+                if (i % j == 0) {
+                    dp[i] = min(dp[i], dp[j] + i / j);
+                }
+            }
+        }
+        return dp[n];   
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+
+<div class="row">
+    <div class="col c12">
         <h3>Leetcode 291. Word Pattern II</h3>
         <h4>Posted on Oct 05, 2017</h4>
 <br>
