@@ -1,0 +1,73 @@
+// Dropbox 10/10
+
+// Returns the current time in milliseconds
+long getCurrentTimeMillis();
+
+// Called every time we get a hit
+void logHit() {
+  
+}
+
+// Returns the number of hits in the last 5 minutes
+long getHits() {
+}
+
+
+// logHit: 1ms        
+// getHits: 5minutes 2ms - 0
+loghit
+// getHits: 5minutes 2ms - 1 
+
+
+5 * 60 * 1000 
+
+class HitCounter {
+  public:
+    HitCounter() {
+      times.resize(NUM_BUCKETS, 0);
+      hits.resize(NUM_BUCKETS, 0);
+      last_time_call_get_hits = -NUM_BUCKETS;
+      history_times = 0;
+    }
+  
+    void logHit() {
+      long curr_time = getCurrentTimeMillis();
+      int idx = curr_time % NUM_BUCKETS;
+      if (times[idx] == curr_time) {
+        hits[idx]++; 
+      } else {
+        history_times -= hits[idx];
+        times[idx] = curr_time;
+        hits[idx] = 1;
+      }
+      history_times++;
+      return;
+    }
+    
+    long getHits() {
+      long curr_time = getCurrentTimeMillis();
+      int res = 0;
+      int diff = curr_time - last_time_call_get_hits;
+      last_time_call_get_hits = curr_time;
+      if (diff > NUM_BUCKETS) {
+        for (int i = 0; i < hits.size(); ++i) {
+          if (curr_time - times[i] < NUM_BUCKETS) {
+            res += hits[i];  
+          }
+        }
+      } else {
+        res = history_times;
+      }
+      history_times = res;
+      return res;
+    }
+    
+  
+  private:
+    const int NUM_BUCKETS = 5 * 60 * 1000;
+    vector<int> hits;
+    vector<long> times;
+    int history_times;
+    long last_time_call_get_hits;
+    
+}

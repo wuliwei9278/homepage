@@ -223,6 +223,277 @@ while (!mypq.empty()) {
 <br>
 <br>
 
+
+
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 144. Binary Tree Preorder Traversal</h3>
+        <h4>Posted on Oct 12, 2017</h4>
+<br>
+<p> 
+Just want to review the most important questions for trees.
+</p>
+
+<pre><code> 
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector&lt;int> preorderTraversal(TreeNode* root) {
+        vector&lt;int> res;
+        stack&lt;TreeNode*> s;
+        if (!root) {
+            return res;
+        }
+        s.push(root);
+        while (!s.empty()) {
+            TreeNode* p = s.top();
+            s.pop();
+            res.push_back(p->val);
+            if (p->right) {
+                s.push(p->right);
+            }
+            if (p->left) {
+                s.push(p->left);    
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 94. Binary Tree Inorder Traversal</h3>
+        <h4>Posted on Oct 12, 2017</h4>
+<br>
+<p> 
+Inorder is similiar to preorder: we can do it both in recursion and iteratively. For iterative, the 
+main difference is that we have insert differently, we need to insert left node as many as possible, 
+then add middle to res, and right in the end. 
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> res;
+        if (!root) {
+            return res;
+        }
+        inorderTraversal(root, res);
+        return res;
+    }
+    
+    void inorderTraversal(TreeNode* root, vector<int>& res) {
+        if (root->left) {
+            inorderTraversal(root->left, res);
+        }
+        res.push_back(root->val);
+        if (root->right) {
+            inorderTraversal(root->right, res);
+        }
+    }
+};
+
+// Non-recursion
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> res;
+        stack<TreeNode*> s;
+        TreeNode *p = root;
+        while (p || !s.empty()) {
+            while (p) {
+                s.push(p);
+                p = p->left;
+            }
+            p = s.top();
+            s.pop();
+            res.push_back(p->val);
+            p = p->right;
+        }
+        return res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 42. Trapping Rain Water</h3>
+        <h4>Posted on Oct 12, 2017</h4>
+<br>
+<p> 
+I think the solution is very smart, taking advantage of the fact that water will be trapped if the 
+height is lower than left and right wall. and then moving the lower one of the two walls to update
+the res until the wall height is increased. Then one can consider the new left and right wall as the
+new problem and solve again using same algorithm.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int trap(vector&lt;int>& height) {
+        int res = 0, left = 0, right = height.size() - 1;
+        while (left < right) {
+            int mn = min(height[left], height[right]);
+            if (mn == height[left]) {
+                ++left;
+                while (left < right && height[left] < mn) {
+                    res += (mn - height[left]);
+                    ++left;
+                }
+            } else {
+                --right;
+                while (right > left && height[right] < mn) {
+                    res += (mn - height[right]);
+                    --right;
+                }
+            }
+        }
+        return res;
+    }
+};
+
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 84. Largest Rectangle in Histogram</h3>
+        <h4>Posted on Oct 12, 2017</h4>
+<br>
+<p> 
+Two solutions use the same idea that when the rectangle height is increasing, there is 
+no need to update res, we only need to do so when we encounter a lower one. But the first one
+still can traversal more than $n$ due to the for loop. (Consider the example case 
+when $i = 5$). The second one, to the contrary, will skip
+all the uncessary steps, will only update res exactly $n$ times.
+One can print out to see the difference of two methods.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int largestRectangleArea(vector&lt;int>& height) {
+        int res = 0;
+        for (int i = 0; i < height.size(); ++i) {
+            if (i + 1 < height.size() && height[i] <= height[i + 1]) {
+                continue;
+            }
+            int minH = height[i];
+            for (int j = i; j >= 0; --j) {
+                minH = min(minH, height[j]);
+                int area = minH * (i - j + 1);
+                res = max(res, area);
+                //cout << i << " " << j << " " << res << endl;
+            }
+        }
+        return res;
+    }
+};
+
+class Solution {
+public:
+    int largestRectangleArea(vector&lt;int>& heights) {
+        int res = 0;
+        stack&lt;int> s;
+        heights.push_back(0);
+        for (int i = 0; i < heights.size(); ++i) {
+            while (!s.empty() && heights[s.top()] > heights[i]) {
+                int j = s.top();
+                s.pop();
+                res = max(res, heights[j] * (s.empty() ? i : (i - s.top() - 1))); 
+                //cout << i << " " << j << " " << 
+                //    heights[j] * (s.empty() ? i : (i - s.top() - 1)) << endl;
+            } 
+            s.push(i);
+        }
+        return res;
+    }
+};
+
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 238. Product of Array Except Self</h3>
+        <h4>Posted on Oct 11, 2017</h4>
+<br>
+<p> 
+I actually encountered this question last year in the first round of technical interview with Google.
+No wonder that I screwed it up. I still remember how bad I feel after the interviewer questioned that
+why I still have no paper published at my third year of PhD. 
+
+Basically, one cannot use divide and therefore should maintain a copy of product of all numbers to the left
+and then go from right to left. This way, unlike the second approach, we do not need to use extra space
+but the space of storing the results.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector<int> productExceptSelf(vector&lt;int>& nums) {
+        vector<int> res(nums.size(), 1);
+        for (int i = 1; i < nums.size(); ++i) {
+            res[i] = res[i - 1] * nums[i - 1];
+        }
+        int right = 1;
+        for (int i = nums.size() - 1; i >= 0; --i) {
+            res[i] *= right;
+            right *= nums[i];
+        }
+        return res;
+    }
+
+    vector<int> productExceptSelf(vector&lt;int>& nums) {
+        int n = nums.size();
+        vector<int> fwd(n, 1), bwd(n, 1), res(n);
+        for (int i = 0; i < n - 1; ++i) {
+            fwd[i + 1] = fwd[i] * nums[i];
+        }
+        for (int i = n - 1; i > 0; --i) {
+            bwd[i - 1] = bwd[i] * nums[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            res[i] = fwd[i] * bwd[i];
+        }
+        return res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
 <div class="row">
     <div class="col c12">
         <h3>Leetcode 208. Implement Trie (Prefix Tree)</h3>
@@ -607,7 +878,7 @@ public:
 <br>
 <p> I think the main difficult lies in the follow-up questions: <b>What if the number of hits per second could be very large? Does your design scale?</b>
 </p>
-<p> I think in a real interview, that is the kind of questions you should bring it up to the interview before you are asked. It is quite likely that there are thousands if not millions of hits each second. One may wish to use long or long long instead of int below to avoid overflow issues. since $2^32 - 1 = 4,294,967,295$, it is not that a large number. Overflow could happen when we don't have 300 seconds but a lot more granularities. maybe 300 * 60 ms. Also try not use 300 directly in the codes, define a constant number instead. The algorithm side, using a bucket of 300 is quick smart, definitely smarter than using a queue and returning the size of queue as the result. Since the size of queue could be very large and that is simply a waste of memory when you don't need to store the exact timestamp (same here) many many times. It could easily lead to memory issues when scaling up. Therefore, one should never do that in practice. Instead the requirement says that you need to keep the history, then you should write it to a database/disk for every second query results. I think more likely case is that not only hits are useful but also the hit comes with other useful information and those information usually is written to database. One may wish to access those later. (a need to record the hits id within past 300 seconds). One just need to add a vector&lt;vector&lt;int>> to store those.</p>
+<p> I think in a real interview, that is the kind of questions you should bring it up to the interview before you are asked. It is quite likely that there are thousands if not millions of hits each second. One may wish to use long or long long instead of int below to avoid overflow issues. since $2^{32} - 1 = 4,294,967,295$, it is not that a large number. Overflow could happen when we don't have 300 seconds but a lot more granularities. maybe 300 * 60 ms. Also try not use 300 directly in the codes, define a constant number instead. The algorithm side, using a bucket of 300 is quick smart, definitely smarter than using a queue and returning the size of queue as the result. Since the size of queue could be very large and that is simply a waste of memory when you don't need to store the exact timestamp (same here) many many times. It could easily lead to memory issues when scaling up. Therefore, one should never do that in practice. Instead the requirement says that you need to keep the history, then you should write it to a database/disk for every second query results. I think more likely case is that not only hits are useful but also the hit comes with other useful information and those information usually is written to database. One may wish to access those later. (a need to record the hits id within past 300 seconds). One just need to add a vector&lt;vector&lt;int>> to store those.</p>
 
 <pre><code> 
 class HitCounter {
