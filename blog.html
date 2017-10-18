@@ -223,14 +223,94 @@ while (!mypq.empty()) {
 <br>
 <br>
 
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 102. Binary Tree Level Order Traversal</h3>
+        <h4>Posted on Oct 16, 2017</h4>
+<br>
+<p> 
+Use queue for level-order while for preorder, postorder and inorder, we need to use stack.
+</p>
 
+<pre><code> 
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        if (root == nullptr) return res;
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            vector<int> onelevel;
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                TreeNode *node = q.front();
+                q.pop();
+                onelevel.push_back(node->val);
+                if (node->left) {
+                    q.push(node->left);
+                }
+                if (node->right) {
+                    q.push(node->right);
+                }
+            }
+            res.push_back(onelevel);
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 145. Binary Tree Postorder Traversal</h3>
+        <h4>Posted on Oct 16, 2017</h4>
+<br>
+<p> 
+Posterorder is probably the most complicated out of three (or four, if level traversal is included).
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> res;
+        stack<TreeNode*> s;
+        TreeNode *p = root;
+        TreeNode *prev = nullptr;
+        while (p || !s.empty()) {
+            while (p) {
+                s.push(p);
+                p = p->left;
+            }
+            TreeNode *node = s.top();
+            if (node->right == nullptr || node->right == prev) {
+                s.pop();
+                res.push_back(node->val);
+                prev = node;
+            } else {
+                p = node->right;
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+</div>
+<br>
+<br>
 
 
 
 <div class="row">
     <div class="col c12">
         <h3>Leetcode 144. Binary Tree Preorder Traversal</h3>
-        <h4>Posted on Oct 12, 2017</h4>
+        <h4>Posted on Oct 16, 2017</h4>
 <br>
 <p> 
 Just want to review the most important questions for trees.
