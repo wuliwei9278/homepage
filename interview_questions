@@ -1,4 +1,28 @@
-// Dropbox 10/10
+// Amazon two rounds onsite Oct 20
+// Prime 
+unexpected: 
+1. grep (use linux command when available rather than algorithms side)
+2. Java concepts (important for Amazon supposedly): difference between final, finally, finalize
+3. Design Pattern
+Others:
+- coding questions:
+level tree traversal
+find one missing number (0-10, e.g.), one only need to calculate the sum, then substract from the supposed total
+- machine learning/statistics question
+// Personalization
+Mostly behavior questions:
+leadership principles
+how to do when cannot meet deadline
+lower quality or work around 
+explain your work to worker/farmer on the street
+- coding questions
+tree connect nodes in the same level from left to right
+dynamic question with backtracking
+find minimum steps and record sequence of steps taken for the optimal situation
+
+
+
+// Dropbox Oct 10
 
 // Returns the current time in milliseconds
 long getCurrentTimeMillis();
@@ -71,3 +95,5 @@ class HitCounter {
     long last_time_call_get_hits;
     
 }
+
+

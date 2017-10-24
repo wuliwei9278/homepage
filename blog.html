@@ -226,6 +226,87 @@ while (!mypq.empty()) {
 
 <div class="row">
     <div class="col c12">
+        <h3>Leetcode 675. Cut Off Trees for Golf Event</h3>
+        <h4>Posted on Oct 23, 2017</h4>
+<br>
+<p> 
+The trick here is that since we have to go from smallest height to largest height, then why don't we store
+all required information about the trees and sort them according to the height? Then we are breaking the big
+traversal problem into a sequence of small traversal problems, which can either be done by BFS or DFS. But since
+here we need to record the minimum number of steps taken (recall the minimum depth question in binary tree: BFS is 
+preferred over DFS, because DFS has to iterate the tree once even if the tree root has a leaf left child and this is
+not very efficient; while BFS is level traversal, so we do less work despite the same upper time complexity bound). Same
+reason here, we use BFS here and we can implement BFS iteratively using queue and use visited matrix to record which nodes
+have been traversed such that we don't have to go through again in that particular traversal. (Note that for the next traversal
+between two trees we are actually allowed to go through the same node and this is due to the existing obstacles). Another thing
+I did not realize in the beginning is that the starting point could be grass instead of trees and between trees we can traverse 
+on grass.   
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int cutOffTree(vector&lt;vector&lt;int>>& forest) {
+        if (forest.empty() || forest[0].empty()) return 0;
+        int m = forest.size(), n = forest[0].size();
+        vector&lt;vector&lt;int>> trees;
+        // get all the tree positions and sort based on height
+        // trees[i][0] is height. The default comparison of vector compare first element before other elements.
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (forest[i][j] > 1) trees.push_back({forest[i][j], i, j});
+            }
+        }
+        sort(trees.begin(), trees.end());
+        int ans = 0;
+        // accumulate all the paths
+        for (int i = 0, cur_row = 0, cur_col = 0; i < trees.size(); i++) {
+            int step = next_step(forest, cur_row, cur_col, trees[i][1], trees[i][2]);
+            // if next tree cannot be reached, step = -1;
+            if (step == -1) return -1;
+            ans += step;
+            cur_row = trees[i][1];
+            cur_col = trees[i][2];
+        }
+        return ans;
+    }
+private:
+    // BFS to find shortest path to next tree; if cannot reach next tree, return -1
+    int next_step(vector&lt;vector&lt;int>>& forest, int sr, int sc, int er, int ec) {
+        if (sr == er && sc == ec) return 0;
+        int m = forest.size(), n = forest[0].size();
+        queue&lt;pair&lt;int, int>> myq;
+        myq.push({sr, sc}); 
+        vector&lt;vector&lt;int>> visited(m, vector&lt;int>(n, 0));
+        visited[sr][sc] = 1;
+        int step = 0;
+        vector&lt;int> dir = {-1, 0, 1, 0, -1};
+        while (!myq.empty()) {
+            step++;
+            int sz = myq.size();
+            for (int i = 0; i < sz; i++) {
+                int row = myq.front().first, col = myq.front().second;
+                myq.pop();
+                for (int i = 0; i < 4; i++) {
+                    int r = row + dir[i], c = col + dir[i+1];
+                    if (r < 0 || r >= m || c < 0 || c >= n || visited[r][c] == 1 || forest[r][c] == 0) continue;
+                    if (r == er && c == ec) return step;
+                    visited[r][c] = 1;
+                    myq.push({r, c});
+                }
+            }
+        }
+        return -1;
+    }
+};
+</code></pre>
+</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
         <h3>Leetcode 206. Reverse Linked List</h3>
         <h4>Posted on Oct 19, 2017</h4>
 <br>
