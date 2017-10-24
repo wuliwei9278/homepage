@@ -1,14 +1,14 @@
-// Amazon two rounds onsite Oct 20
+Amazon two rounds onsite Oct 20
 // Prime 
 unexpected: 
 1. grep (use linux command when available rather than algorithms side)
 2. Java concepts (important for Amazon supposedly): difference between final, finally, finalize
-3. Design Pattern
+3. Design Pattern (maybe I should buy a book for this: bought a second-hand book just now)
 Others:
 - coding questions:
 level tree traversal
 find one missing number (0-10, e.g.), one only need to calculate the sum, then substract from the supposed total
-- machine learning/statistics question
+- machine learning/statistics question (many are random questions in a very very fast pace Q&A fashion)
 // Personalization
 Mostly behavior questions:
 leadership principles
@@ -22,7 +22,7 @@ find minimum steps and record sequence of steps taken for the optimal situation
 
 
 
-// Dropbox Oct 10
+Dropbox Oct 10
 
 // Returns the current time in milliseconds
 long getCurrentTimeMillis();
@@ -94,6 +94,6 @@ class HitCounter {
     int history_times;
     long last_time_call_get_hits;
     
-}
+};
 
 
