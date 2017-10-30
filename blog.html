@@ -105,15 +105,25 @@ function topFunction() {
 
 <div class="row">
     <div class="col c12">
-        <h3>Summary of Commonly Used C++ Syntax for Leetcode (Unfinished)</h3>
+        <h3>Summary of Commonly Used C++ Syntax for Leetcode (Unfinished and Keep Updating)</h3>
         <h4>Posted on Oct 10, 2017</h4>
 <br>
 <p> Since I am so used to searching everything whenever I need them, I think it may be a good idea
     to summarize what I have used so far in Leetcode. One can read more on range-based for loop 
-    <a href="http://en.cppreference.com/w/cpp/language/range-for">here</a> and lvalue, rvalue <a href="https://www.cprogramming.com/c++11/rvalue-references-and-move-semantics-in-c++11.html">here</a>.
+    <a href="http://en.cppreference.com/w/cpp/language/range-for">here</a> and lvalue, rvalue <a href="https://www.cprogramming.com/c++11/rvalue-references-and-move-semantics-in-c++11.html">here</a>. Also, for template coding of functions and classes, one 
+    can refer to the tutorial <a href="http://www.cplusplus.com/doc/oldtutorial/templates/">here</a>.
 </p>
 
 <pre><code> 
+
+// String
+string name ("John");
+name += " K. ";
+name += '\n';
+string str = "2001";
+int i = stoi(str);
+string pi = "pi is " + to_string(3.1415926);
+
 // Array
 int numbers[] = {20,40,50,10,30};
 // sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp);
@@ -226,6 +236,530 @@ while (!mypq.empty()) {
 
 <div class="row">
     <div class="col c12">
+        <h3>Leetcode 121. Best Time to Buy and Sell Stock</h3>
+        <h4>Posted on Oct 29, 2017</h4>
+<br>
+<p> Just need to use two variables to keep updating the current minimum buy price and updating
+    current maximum potential profit.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;int> findClosestElements(vector&lt;int>& arr, int k, int x) {
+        int left = 0, right = arr.size() - k;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            // want first yes in a sequence of no's followed by yes's
+            // predicate of p(mid) == true
+            if (x - arr[mid] <= arr[mid + k] - x) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return vector&lt;int>(arr.begin() + left, arr.begin() + left + k);
+    }
+};
+</code></pre>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 121. Best Time to Buy and Sell Stock</h3>
+        <h4>Posted on Oct 29, 2017</h4>
+<br>
+<p> Just need to use two variables to keep updating the current minimum buy price and updating
+    current maximum potential profit.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int maxProfit(vector&lt;int>& prices) {
+        int res = 0, buy = INT_MAX;
+        for (int price : prices) {
+            buy = min(buy, price);
+            res = max(res, price - buy);
+        }
+        return res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 308. Range Sum Query 2D - Mutable</h3>
+        <h4>Posted on Oct 29, 2017</h4>
+<br>
+<p> Another question has something to do with the trade-off of two operations: update and
+    sumRegion. The implementation really depends on which API call is more frequent. If there
+    are a lot of updates but very few sums, then we can simply allow sumRegion to be naive implementation
+    with $O(n^2)$ time complexity. If there are a lot of sums but very few updates then we can maintain
+    a matrix of cumulative sum of all elements with smaller indexes. So this way, sum operation is $O(1)$
+    but the update operation is $O(n^2)$. On the other hand, one can use Fenwick tree to have both operations 
+    of time complxity $O(\log n)$. The second solution is also a balanced way but with both operations of
+    time complexity $O(n)$ but much easier to implement than 2D-Fenwick tree.
+</p>
+
+<pre><code> 
+class NumMatrix {
+public:
+    NumMatrix(vector&lt;vector&lt;int>> matrix) {
+        if (matrix.empty() || matrix[0].empty()) return;
+        mat.resize(matrix.size() + 1, vector&lt;int>(matrix[0].size() + 1, 0));
+        bit.resize(matrix.size() + 1, vector&lt;int>(matrix[0].size() + 1, 0));
+        for (int i = 0; i < matrix.size(); ++i) {
+            for (int j = 0; j < matrix[i].size(); ++j) {
+                update(i, j, matrix[i][j]);
+            }
+        }
+    }
+
+    void update(int row, int col, int val) {
+        int diff = val - mat[row + 1][col + 1];
+        for (int i = row + 1; i < mat.size(); i += i & -i) {
+            for (int j = col + 1; j < mat[i].size(); j += j & -j) {
+                bit[i][j] += diff;
+            }
+        }
+        mat[row + 1][col + 1] = val;
+    }
+
+    int sumRegion(int row1, int col1, int row2, int col2) {
+        return getSum(row2 + 1, col2 + 1) - getSum(row1, col2 + 1) - getSum(row2 + 1, col1) + getSum(row1, col1);
+    }
+    
+    int getSum(int row, int col) {
+        int res = 0;
+        for (int i = row; i > 0; i -= i & -i) {
+            for (int j = col; j > 0; j -= j & -j) {
+                res += bit[i][j];
+            }
+        }
+        return res;
+    } 
+    
+private:
+    vector&lt;vector&lt;int>> mat;
+    vector&lt;vector&lt;int>> bit;
+};
+/**
+ * Your NumMatrix object will be instantiated and called as such:
+ * NumMatrix obj = new NumMatrix(matrix);
+ * obj.update(row,col,val);
+ * int param_2 = obj.sumRegion(row1,col1,row2,col2);
+ */
+
+
+// Column Sum
+class NumMatrix {
+public:
+    NumMatrix(vector&lt;vector&lt;int>> matrix) {
+        if (matrix.empty() || matrix[0].empty()) return;
+        mat = matrix;
+        colSum.resize(matrix.size() + 1, vector&lt;int>(matrix[0].size(), 0));
+        for (int i = 1; i < colSum.size(); ++i) {
+            for (int j = 0; j < colSum[0].size(); ++j) {
+                colSum[i][j] = colSum[i - 1][j] + matrix[i - 1][j];
+            }
+        }
+    }
+
+    void update(int row, int col, int val) {
+        for (int i = row + 1; i < colSum.size(); ++i) {
+            colSum[i][col] += val - mat[row][col];
+        }
+        mat[row][col] = val;
+    }
+
+    int sumRegion(int row1, int col1, int row2, int col2) {
+        int res = 0;
+        for (int j = col1; j <= col2; ++j) {
+            res += colSum[row2 + 1][j] - colSum[row1][j];
+        } 
+        return res;
+    }
+
+private:
+    vector&lt;vector&lt;int>> mat;
+    vector&lt;vector&lt;int>> colSum;
+};
+
+</code></pre>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 56. Merge Intervals</h3>
+        <h4>Posted on Oct 27, 2017</h4>
+<br>
+<p> The tricky part is to sort the intervals based on the left endpoint.
+</p>
+
+<pre><code> 
+/**
+ * Definition for an interval.
+ * struct Interval {
+ *     int start;
+ *     int end;
+ *     Interval() : start(0), end(0) {}
+ *     Interval(int s, int e) : start(s), end(e) {}
+ * };
+ */
+
+struct cmp {
+    bool operator() (Interval& a, Interval& b) {
+        return (a.start < b.start);
+    }
+};
+
+class Solution {
+public:  
+    vector&lt;Interval> merge(vector&lt;Interval>& intervals) {
+        vector&lt;Interval> res;
+        if (intervals.empty()) return res;
+        sort(intervals.begin(), intervals.end(), cmp());
+        res.push_back(intervals[0]);
+        for (int i = 1; i < intervals.size(); ++i) {
+            if (res.back().end >= intervals[i].start) {
+                int start = res.back().start, end = res.back().end;
+                res.pop_back();
+                res.push_back(Interval(start, max(end, intervals[i].end)));
+            } else {
+                res.push_back(intervals[i]);
+            }
+        }
+        return res;
+    }
+    
+};
+</code></pre>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 17. Letter Combinations of a Phone Number</h3>
+        <h4>Posted on Oct 27, 2017</h4>
+<br>
+<p> Using recursion is much clearer than the codes I wrote in Python before. That is one point
+    I want to convey: more lines is not a bad thing sometimes and it is actually a good thing
+    if longer codes are self-explanatory and short ones are not.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;string> letterCombinations(string digits) {
+        vector&lt;string> res;
+        if (digits == "") return res;
+        vector&lt;string> dict = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        letterCombinations(digits, dict, 0, "", res);
+        return res;
+    }
+    
+    void letterCombinations(string digits, vector&lt;string>& dict, 
+                            int level, string s, vector&lt;string>& res) {
+        if (level == digits.size()) {
+            res.push_back(s);
+        } else {
+            string str = dict[digits[level] - '2'];
+            //cout << str;
+            for (int i = 0; i < str.size(); ++i) {
+                s.push_back(str[i]);
+                letterCombinations(digits, dict, level + 1, s, res);
+                s.pop_back();
+            }
+        }
+        return;
+    }
+};
+</code></pre>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 20. Valid Parentheses</h3>
+        <h4>Posted on Oct 27, 2017</h4>
+<br>
+<p> Use of stack. Pay attention to that need to check if the stack is empty in the end. I am doing FB questions
+    now and they seem quite simple but you need to be bug-free and be thorough in thoughts. 
+</p>
+
+<pre><code> 
+cclass Solution {
+public:
+    bool isValid(string s) {
+        stack&lt;char> parentheses;
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == '(' || s[i] == '[' || s[i] == '{') parentheses.push(s[i]);
+            else {
+                if (parentheses.empty()) return false;
+                if (s[i] == ')' && parentheses.top() != '(') return false;
+                if (s[i] == ']' && parentheses.top() != '[') return false;
+                if (s[i] == '}' && parentheses.top() != '{') return false;
+                parentheses.pop();
+            }
+        }
+        return parentheses.empty();
+    }
+};
+</code></pre>
+</div>
+</div>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 1. Two Sum</h3>
+        <h4>Posted on Oct 27, 2017</h4>
+<br>
+<p> This is like the first leetcode question I have ever done. Use of hashmap is easiest way. Actually look at <a href="https://leetcode.com/problems/two-sum-iii-data-structure-design/description/">OOD deisgn</a> question based on two sum, it is not clear what implementation
+to do exactly. It is up to the requirements of the system. Does it have more adds or more finds?  
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;int> twoSum(vector&lt;int>& nums, int target) {
+        unordered_map&lt;int,int> m;
+        vector&lt;int> v{0 , 0};
+        for (int i = 0; i < nums.size(); ++i) {
+            if (m.find(nums[i]) == m.end()) {
+                m[target - nums[i]] = i;
+            }
+            else {
+                v[0] = i;
+                v[1] = m[nums[i]];
+                break;
+            }
+        }
+        return v;
+        
+    }
+};
+</code></pre>
+</div>
+</div>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 461. Hamming Distance</h3>
+        <h4>Posted on Oct 26, 2017</h4>
+<br>
+<p> Mainly to test if one knows "Exclusive Or".
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int hammingDistance(int x, int y) {
+        int tmp = x ^ y;
+        int res = 0;
+        while (tmp) {
+            if (tmp % 2) res++;
+            tmp /= 2;
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+</div>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 283. Move Zeroes</h3>
+        <h4>Posted on Oct 26, 2017</h4>
+<br>
+<p> I remember the second one is how I failed the last interview with fb.... A simple variation from
+    the standard leetcode question with two pointers. But I had a hard time seeing the difference back
+    then and made a lot of mistakes in the middle of coding.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    void moveZeroes(vector&lt;int>& nums) {
+        // 0, 1, 0, 3, 12
+        // 1  0  0  3  12
+        //    l     i
+        
+        // all elements before l are zeros
+        int l = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i]) {
+                swap(nums[i], nums[l++]);
+            } 
+        }
+        return;
+    }
+
+    int moveZeroes(vector&lt;int>& nums) {
+        // if all elements after nonzeros are not important, then no need to do swaps
+        int l = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i]) {
+                nums[l++] = nums[i];
+            } 
+        }
+        // l is number of non-zeros
+        cout << l << endl;
+        return l;
+    }
+};
+</code></pre>
+</div>
+</div>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 12. Integer to Roman</h3>
+        <h4>Posted on Oct 26, 2017</h4>
+<br>
+<p> 
+Greedy algorithm: substract as many as possible for all these numbers: 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1
+in this particular order. This only work for numbers up to 3999 for obvious reason.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    string intToRoman(int num) {
+        string res = "";
+        vector&lt;int> val{1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        vector&lt;string> str{"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        for (int i = 0; i < val.size(); ++i) {
+            while (num >= val[i]) {
+                num -= val[i];
+                res += str[i];
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 13. Roman to Integer</h3>
+        <h4>Posted on Oct 26, 2017</h4>
+<br>
+<p> 
+Nothing too interesting. Just remember two cases: add up or substract the integer depending on the order of two adjacent Roman letters. 
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int romanToInt(string s) {
+        unordered_map&lt;char, int> m{
+            {'I', 1}, {'V', 5}, {'X', 10}, {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000}
+        };
+        int res = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            int val = m[s[i]];
+            if (i == s.size() - 1 || m[s[i + 1]] <= m[s[i]]) res += val;
+            else res -= val;
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 215. Kth Largest Element in an Array</h3>
+        <h4>Posted on Oct 26, 2017</h4>
+<br>
+<p> 
+This question is to test quickselect which has $O(n)$ time complexity on average, lower than sorting algorithms such as quickselect $O(n\log n)$
+time complexity. However, quickselect is resembling quicksort in many ways: including the two partition schemes. One is known as Lomuto partition
+scheme and the other one is called Hoare partition scheme. The main difference is that in Lomuto partition scheme, one can make sure the partition
+element is at the index returned but for Hoare partition scheme this is no longer true. We don't know exactly where the partition element is at,
+except the fact that is not at the right side of the index returned. That is why for the recursion part of the algorithm, we can see that there
+is difference as well. One is using pos - 1 and the other is using pos; and the first one recursion ends when pos == k and second one ends when
+start == end. The two differences are very important. Otherwise you will get bug for examples like [2, 4, 1, 3] and 2. You can return 1 instead 
+of correct answer 3. References I used are <a href="https://programmingpraxis.com/2016/10/28/hoares-partition/">link1</a> and <a href="https://en.wikipedia.org/wiki/Quicksort#cite_note-16">link2</a>. Quicksort is slightly easier to implement than quickselect. One does not need to use $k$
+and the recursion ends when start >= end. It is divide and conquer algorithm. Here is not the case, choosing one branch of recursion rather
+than going both ways. Talking about Quicksort, it does not work well for sorting linkedlists since it requires random access to elements in 
+the list and in that case one should use Mergesort, and it can be easily implemented in-place. (In-place is usually difficult for MergeSort since
+one has to move the data in the array up by 1, see <a href="http://penguin.ewu.edu/cscd300/Topic/AdvSorting/MergeSorts/InPlace.html">here</a>)
+for more information.
+</p>
+
+<pre><code> 
+class Solution {
+public:
+    int findKthLargest(vector&lt;int>& nums, int k) {
+        int left = 0, right = nums.size() - 1;
+        return quickSelect(nums, 0, nums.size() - 1, k - 1);
+    }
+    
+    int quickSelect(vector&lt;int>& nums,int start,int end, int k){
+        int pos = partition(nums, start, end);
+        if (pos == k) return nums[pos];
+        else if (pos > k) return quickSelect(nums, start, pos - 1, k);
+        else return quickSelect(nums, pos + 1, end, k);
+    }
+    
+    // Lomuto partition scheme
+    int partition(vector&lt;int>& nums,int l,int r){
+        int pivot = nums[r];
+        int i = l;
+        for(int j = l;j < r;j++){
+            if(nums[j] >= pivot) swap(nums[i++],nums[j]);
+        }
+        swap(nums[i],nums[r]);
+        return i;
+    }
+    
+    int quickSelect2(vector&lt;int>& nums,int start,int end, int k){
+        if (end == start) return nums[start];
+        int pos = partition2(nums, start, end);
+        if (pos >= k) return quickSelect(nums, start, pos, k);
+        else return quickSelect(nums, pos + 1, end, k);
+    }
+    
+    // Hoare partition scheme (has 3 times expected swaps compared to Lomuto)
+    int partition2(vector&lt;int>& nums,int l,int r){
+        int x = nums[l], i = l - 1, j = r + 1;
+        while (1) {
+            do  j--; while (nums[j] < x);
+            do  i++; while (nums[i] > x);
+            if  (i < j)
+                swap(nums[i], nums[j]);
+            else
+                return j;
+        }
+    }    
+};
+</code></pre>
+</div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
         <h3>Leetcode 675. Cut Off Trees for Golf Event</h3>
         <h4>Posted on Oct 23, 2017</h4>
 <br>
@@ -314,6 +848,11 @@ private:
 I realize that it is very important to visualize things. For example, during interviews,
 one should be able to draw what I did below. That really helps you coding anyway if you
 don't use papers (maybe even better than paper/pen, whiteboard is my favorite though).
+
+Today when I explained it to my gf, I realized that all of a sudden that recursion
+can be thought of mathemtical induction. The most challenging part is to figure out how
+to use previous results from calling recursion function to get the results for this step. Also,
+finding the conditions when recursion ends is sometimes challenging.
 </p>
 
 <pre><code> 

@@ -1,4 +1,148 @@
-Amazon two rounds onsite Oct 20
+// Dropbox Second Round Phone Interview 
+// Oct 24, 2017
+ -------------
+|            |
+|     /\     |
+-----/  \----  <--- horizon line
+|____________|
+  
+ -------------
+|  *       * |
+|     /\     |
+|    \ /  *  |
+|____________|
+
+
+Each photograph is divided into a rectangular grid of pixels. For instance, you can
+have a photograph that is 3x3.
+  
+This photograph will have nine pixels.
+
+[][][]
+[][][]    
+[][][]
+  
+  
+For each pixel in a photo, you assign it a floating point value between 0 and 1 which
+represents the likelihood that an edge is going through that pixel. The higher the value, the higher the likelihood.
+
+[0.5][0.7][0.2]
+[0.3][0.6][0.4]    
+[0.2][0.8][0.5]
+
+A horizon is a contiguous line running left to right across the photo with the addition
+limitation that the line cannot go backwards nor straight up or down.
+  
+----/\/\---- <-- OK
+
+[ ][-][ ]
+[-][ ][-]    OK
+[ ][ ][ ]
+  
+[ ][ ][ ]
+[-][-][-]    OK
+[ ][ ][ ]
+  
+[ ][-][ ]
+[-][ ][ ]    Not OK
+[ ][ ][-]
+
+[ ][ ][ ]
+[-][-][ ]    Not OK
+[ ][-][-]
+
+[ ][ ][ ]
+[ ][-][ ]    Not OK
+[ ][-][-]
+
+You define the value of a horizon to be the smallest value it traverses (weakest link).
+  
+ X 
+[0.5][0.7][0.2]
+      ---
+[0.3][0.6][0.4] -> value of this horizon is 0.3
+----       ---
+[0.2][0.8][0.5]
+
+[0.5][0.7][0.2] -> value of this horizon is 0.2
+ ---  --- ---
+[0.3][0.6][0.4] 
+[0.2][0.8][0.5]
+
+Problem: Given a horizon, calculuate the best (highest) horizon value. Of all valid horizons, find the highest value among them.
+  
+Ex: If the above were the only two horizons, then the best horizon value would be 0.3.
+
+R
+[0.5][0.7][0.2]    
+  
+[0.3][0.6][0.4] 
+
+[0.2][0.2][0.5]
+
+(0,0) (0,1) (0,2)
+[0]  [0.3][0.2]
+
+(1,0)
+[0.3] [0.3][0.3] 
+
+[0]   [0.2][0]
+
+
+recurrence relation
+starting point: R(i,0) = X(i,0) initialize zero all for the rest
+recurrence relation: R[i, j] = min(max(R[i - 1, j - 1], R[i - 1,j], R[i - 1, j + 1]), X[i, j])
+
+
+double findBestHorizon(vector<vector<double>>& X) {
+    int n = X.size(); // 1<=i<=n
+    int m = X[0].size(); // j
+    double res = -1;
+    // this i for different starting point
+    //for (int x = 0; x < n; ++x) {
+        vector<vector<double>> R(n, vector<double>(m, 0.0));
+        //R[x][0] = X[x][0];
+        for (int i = 0; i < n; ++i) {
+            R[i][0] = X[i][0];
+        }
+        // this j is starting of two loop for dp
+        for (int j = 1; j < m; ++j) {
+            for (int i = 0; i < n; ++i) {
+                if (i == 0) {
+                    R[i][j] = min(max(R[i][j - 1], R[i + 1][j - 1]), X[i][j]);
+                } else if (i == n - 1) {
+                    R[i][j] = min(max(R[i - 1][j - 1], R[i][j - 1]), X[i][j]);
+                } else {
+                    R[i][j] = min(max(R[i - 1][j - 1], R[i][j - 1], R[i + 1][j]), X[i][j]);
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            res = max(res, R[i][m - 1]);
+        }
+    //}
+    return res;
+}
+
+
+
+   [][][]
+   [0][x][] --->
+   [0][]
+       
+       
+      [][]
+   [0.2][x][]   R(1,1) = min(X(1,1), max(X(0,1), X(0,0), X(0,2)))
+      [][]
+
+     
+        []     
+     [x][]
+   [0.3][][]
+
+
+
+// Amazon two rounds onsite Oct 20, 2017
 // Prime 
 unexpected: 
 1. grep (use linux command when available rather than algorithms side)
@@ -22,7 +166,7 @@ find minimum steps and record sequence of steps taken for the optimal situation
 
 
 
-Dropbox Oct 10
+// Dropbox Oct 10, 2017
 
 // Returns the current time in milliseconds
 long getCurrentTimeMillis();
