@@ -236,12 +236,487 @@ while (!mypq.empty()) {
 
 <div class="row">
     <div class="col c12">
-        <h3>Leetcode 121. Best Time to Buy and Sell Stock</h3>
+        <h3>Leetcode 535. Encode and Decode TinyURL</h3>
+        <h4>Posted on Sep 10, 2017</h4>
+<br>
+<p>Basically we want to use $62^6 = 56,800,235,584$ to represent all the URLs for
+    all the websites (1.6 billion as of 2016 so 6 digits are sufficient). To achieve this, first idea is to design a hashing function. One can use the codes below to avoid conflicts but it will be slow eventually,
+    because towards the end, it will be harder and harder to find approporiate shorturl.
+    Similar idea, one can use md5/sha1 which takes "longurl + timestamp" as key and regenerate
+    hash codes when there are conflicts. Of course, when data gets very large and exceed memory 
+    size of one machine, one should use distributed SQL or NoSQL database to store key-value pair.
+    (also depending on the peak QPS: Queries Per Second).
+</p>
+<p>See <a href="http://blog.csdn.net/hgl868/article/details/7057843">here</a> for more details on the
+use of rand(), and srand() to generate pseudo-random number.</p>
+
+<pre><code>
+class Solution {
+public:
+    Solution() {
+        dict = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        short2long.clear();
+        long2short.clear();
+        srand(time(nullptr));
+    }
+
+    // Encodes a URL to a shortened URL.
+    string encode(string longUrl) {
+        if (long2short.find(longUrl) != long2short.end()) {
+            return "http://tinyurl.com/" + long2short[longUrl];
+        }
+        int idx;
+        string randStr;
+        for (int i = 0; i < 6; ++i) {
+            randStr.push_back(dict[rand() % 62]);
+        }
+        while (short2long.find(randStr) != short2long.end()) {
+            randStr[idx] = dict[rand() % 62];
+            idx = (idx + 1) % 5;
+        }
+        short2long[randStr] = longUrl;
+        long2short[longUrl] = randStr;
+        return "http://tinyurl.com/" + randStr;
+    }
+
+    // Decodes a shortened URL to its original URL.
+    string decode(string shortUrl) {
+        string randStr = shortUrl.substr(shortUrl.rfind("/") + 1);
+        return short2long.find(randStr) == short2long.end() ? shortUrl : short2long[randStr];
+    }
+
+private:
+    string dict;
+    unordered_map&lt;string, string&gt; short2long, long2short; 
+};
+</code></pre>
+<h3>Leetcode 534. Design TinyURL</h3>
+<p>The second way is to create a one-to-one mapping between base10 and base62. One can simply use base10/base62 as primary keys and longURL as values in SQL databases. 
+    We can increment the counter by 1 when a new
+link is added. When we want to add links distributedly, we can assign counter quota in advance to each machine (creating mapping in advance but leave value field empty) and then fill them out. For 
+more details on System Design, see this <a href="https://discuss.leetcode.com/topic/95853/a-complete-solution-for-tinyurl-leetcode-system-design/2">post</a>. In this kind of question,
+one should first be clear about the purpose (e.g. indexing pages in advance or on the fly) 
+by asking. Then one should figure out how many users, work load, QPS, read-write speed (read
+heavy or write heavy), and figure out
+which database to use (SQL vs NoSQL, row vs column, single machine vs distributed DB). 
+And design system algorithms (e.g. here is URLService class, including encode and decode API).
+One can further optimize using DB sharding (not only horizontal partitioning but
+also data replication) and cache server.</p>
+<pre><code>
+public class URLService {
+    HashMap&lt;String, Integer&gt; ltos;
+    HashMap&lt;Integer, String&gt; stol;
+    static int COUNTER;
+    String elements;
+    URLService() {
+        ltos = new HashMap&lt;String, Integer&gt;();
+        stol = new HashMap&lt;Integer, String&gt;();
+        COUNTER = 1;
+        elements = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    public String longToShort(String url) {
+        String shorturl = base10ToBase62(COUNTER);
+        ltos.put(url, COUNTER);
+        stol.put(COUNTER, url);
+        COUNTER++;
+        return "http://tiny.url/" + shorturl;
+    }
+    public String shortToLong(String url) {
+        url = url.substring("http://tiny.url/".length());
+        int n = base62ToBase10(url);
+        return stol.get(n);
+    }
+    
+    public int base62ToBase10(String s) {
+        int n = 0;
+        for (int i = 0; i < s.length(); i++) {
+            n = n * 62 + convert(s.charAt(i));
+        }
+        return n;
+        
+    }
+    public int convert(char c) {
+        if (c >= '0' && c <= '9')
+            return c - '0';
+        if (c >= 'a' && c <= 'z') {
+            return c - 'a' + 10;
+        }
+        if (c >= 'A' && c <= 'Z') {
+            return c - 'A' + 36;
+        }
+        return -1;
+    }
+    public String base10ToBase62(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n != 0) {
+            sb.insert(0, elements.charAt(n % 62));
+            n /= 62;
+        }
+        while (sb.length() != 6) {
+            sb.insert(0, '0');
+        }
+        return sb.toString();
+    }
+}
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 38. Count and Say</h3>
+        <h4>Posted on Oct 30, 2017</h4>
+<br>
+<p> This question can be done in both recursion way and iterative way. Note that the use of while loop
+    inside the for loop: it is meant to find the last index of repetitive digits. Because that is 
+    when one should append to the res string.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    string countAndSay(int n) {
+        if (n <= 0) return "";
+        string res = "1";
+        while (--n) {
+            string cur = "";
+            for (int i = 0; i < res.size(); ++i) {
+                int cnt = 1;
+                // "1211"
+                while (i + 1 < res.size() && res[i] == res[i + 1]) {
+                    ++cnt;
+                    ++i;
+                }
+                cur += to_string(cnt) + res[i];
+            }
+            res = cur;
+        }
+        return res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 301. Remove Invalid Parentheses</h3>
+        <h4>Posted on Oct 30, 2017</h4>
+<br>
+<p> The idea of using BFS is not hard to come up with, since we are basically trying to remove
+    as few as parentheses as possible (moving as few levels down as possible if we treat each level
+    down is one fewer parethesis). The trickly part is that we need to use a boolean value to 
+    stop pushing trimmed string to the queue when reaching the first leaf node. The reason is that
+    for input ")()()" we only want "()()" but not "()" or "" and this is achieved by using this boolean value.
+    Because we are doing BFS, this can easily be done. 
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    bool isValid(string s) {
+        int cnt = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == '(') {
+                cnt++;
+            } else if (s[i] == ')') {
+                if (cnt == 0) {
+                    return false;
+                } else {
+                    cnt--;
+                }
+            }
+        }
+        return cnt == 0;
+    }
+        
+    
+    vector&lt;string> removeInvalidParentheses(string s) {
+        vector&lt;string> res;
+        unordered_set&lt;string> visited;
+        queue&lt;string> q;
+        q.push(s);
+        visited.insert(s);
+        bool found = false;
+        while (!q.empty()) {
+            string str = q.front(); 
+            q.pop();
+            if (isValid(str)) {
+                res.push_back(str);
+                found = true;
+            }
+            if (found == true) {
+                continue;
+            }
+            for (int i = 0; i < str.size(); ++i) {
+                if (str[i] != '(' && str[i] != ')') {
+                    continue;
+                }
+                string new_str = str.substr(0, i) + str.substr(i + 1);
+                if (visited.find(new_str) == visited.end()) {
+                    q.push(new_str);
+                    visited.insert(new_str);
+                }
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 23. Merge k Sorted Lists</h3>
         <h4>Posted on Oct 29, 2017</h4>
 <br>
-<p> Just need to use two variables to keep updating the current minimum buy price and updating
-    current maximum potential profit.
-</p>
+<p> One can use the min heap to find the $k$ largest elements in array. See <a href="http://www.geeksforgeeks.org/k-largestor-smallest-elements-in-an-array/">here</a>. The time complexity is $O(k + (n - k)*\log k)$ 
+compared to using max heap (default in C++) which has time complexity $O(n + k\log n)$.</p>
+
+<p>Pay attention to the syntax that lambda expression cannot be used inside
+    priority_queue template and one should use <a href="http://www.geeksforgeeks.org/functors-in-cpp/">functor</a>. This is different from <a href="http://en.cppreference.com/w/cpp/algorithm/sort">sort</a>. For sorting, there are a few different ways of changing
+     default comparator, either by overloading operators or using lambda expression/functor to create
+     custom operator (in C++, default is std:less, and default is max heap for priority 
+     queue, sorting order is increasing by fault). One can use functor for sort too but one should
+     use cmp() instead of cmp. </p>
+     <p>Advantage of C++ over Python in interview is that one can easily use min-heap by <pre><code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; Q; </code></pre></p>
+     <p>For the question itself, there are two ways of solving this question. One is divide and 
+        conquer: merge 2 lists at one time, and do it from bottom-up approach. The other is use
+        extra space to store first node for each linked-list. Both approaches have the same time complexity: $O(n \ k \ log(k))$, where $n$ is average number of nodes in a list and $k$
+        is number of lists.</p>
+     <p>Also pay attention to the difference of heap and priority_queue: see <a href="http://pages.cs.wisc.edu/~vernon/cs367/notes/11.PRIORITY-Q.html">here</a>. The one usually referred is called 
+        Binary Heap but there are many more variants of heaps and see this notes for time 
+        complexity comparisons <a href="http://www.eecs.wsu.edu/~ananth/CptS223/Lectures/heaps.pdf">link</a>.</p>
+
+<pre><code>
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+
+// Divide and Conquer
+class Solution {
+public:
+    ListNode* mergeKLists(vector&lt;ListNode*&gt;& lists) {
+        if (lists.size() == 0) return NULL;
+        int n = lists.size();
+        while (n > 1) {
+            int k = (n + 1) / 2;
+            for (int i = 0; i < n / 2; ++i) {
+                lists[i] = mergeTwoLists(lists[i], lists[i + k]);
+            }
+            n = k;
+        }
+        return lists[0];
+    }
+    
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* head = new ListNode(-1);
+        ListNode* cur = head;
+        while (l1 && l2) {
+            if (l1->val < l2->val) {
+                cur->next = l1;
+                l1 = l1->next;
+            } else {
+                cur->next = l2;
+                l2 = l2->next;
+            }
+            cur = cur->next;
+        }
+        if (l1) cur->next = l1;
+        if (l2) cur->next = l2;
+        return head->next;
+    }   
+};
+
+// priority queue
+struct cmp {
+    bool operator () (ListNode* a, ListNode* b) {
+        return a->val > b->val;
+    }
+};
+
+struct great {
+    bool operator () (int a, int b) {
+        return a > b;
+    }
+};
+
+class Solution {
+public:
+    ListNode* mergeKLists(vector&lt;ListNode*&gt;& lists) {
+        // first 10 lines are not related to question itself....
+        vector&lt;int> m{2, 5, 2, 3, 4};
+        /*struct great {
+            bool operator () (int a, int b) {
+                return a > b;
+            }
+        }great;
+        sort(m.begin(), m.end(), great);*/
+        sort(m.begin(), m.end(), great());
+        for (int i = 0; i < m.size(); ++i) {
+            cout << m[i] << " ";
+        }
+
+
+        priority_queue&lt;ListNode*, vector&lt;ListNode*&gt;, cmp&gt; pq;
+        for (int i = 0; i < lists.size(); ++i) {
+            if (lists[i]) {
+                pq.push(lists[i]);
+            }
+        }
+        ListNode* head = nullptr;
+        ListNode* pre = nullptr;
+        while (!pq.empty()) {
+            ListNode* tmp = pq.top();
+            pq.pop();
+            if (!head) {
+                head = tmp;
+            }
+            else {
+                pre->next = tmp;
+            }
+            pre = tmp;
+            if (tmp->next) {
+                pq.push(tmp->next);
+            }
+            
+        }
+        return head;       
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 15. 3Sum</h3>
+        <h4>Posted on Oct 29, 2017</h4>
+<br>
+<p> 
+If sorting is allowed, then the optimal solution with $O(n^2)$ time complexity is a big
+for loop, then a while loop with two pointers. Two get rid of duplicates, one need to write 
+a few extra lines marked below.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;vector&lt;int>> threeSum(vector&lt;int>& nums) {
+        vector&lt;vector&lt;int>> res;
+        sort(nums.begin(), nums.end());
+        for (int k = 0; k < nums.size(); ++k) {
+            if (nums[k] > 0) break;
+            // to avoid duplicates
+            if (k > 0 && nums[k] == nums[k - 1]) continue;
+            int target = 0 - nums[k];
+            int i = k + 1, j = nums.size() - 1;
+            while (i < j) {
+                if (nums[i] + nums[j] == target) {
+                    res.push_back({nums[k], nums[i], nums[j]});
+                    // to avoid duplicates
+                    while (i < j && nums[i] == nums[i + 1]) ++i;
+                    while (i < j && nums[j] == nums[j - 1]) --j;
+                    ++i; --j;
+                } else if (nums[i] + nums[j] < target) ++i;
+                else --j;
+            }
+        }
+        return res;
+    }
+};
+
+// If sorting of whole array is not allowed (common follow-up question for fb)
+class Solution {
+public:
+    vector&lt;vector&lt;int>> threeSum(vector&lt;int>& nums) {
+        set&lt;vector&lt;int>> res;
+        unordered_map&lt;int, int> freq;
+        for (int i = 0; i < nums.size(); ++i) {
+            freq[nums[i]]++;
+        }
+        for (int i = 0; i < nums.size() - 1; ++i) {
+            for (int j = i + 1; j < nums.size(); ++j) {
+                int target = 0 - nums[i] - nums[j];
+                if (freq.count(target)) {
+                    int count = 0;
+                    if (nums[i] == target) count++;
+                    if (nums[j] == target) count++;
+                    if (freq[target] > count) {
+                        vector&lt;int> tmp = {nums[i], nums[j], target};
+                        sort(tmp.begin(), tmp.end());
+                        res.insert(tmp);
+                    } 
+                }
+            }         
+        }
+        return vector&lt;vector&lt;int>>(res.begin(), res.end());
+    }
+};
+</code></pre>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 278. First Bad Version</h3>
+        <h4>Posted on Oct 29, 2017</h4>
+<br>
+<p> Similar to the question below, one just need to figure out when is the predicate(mid). Here is obviously 
+    given by the API Call isBadVersion(mid). When one see the code, there is some similarity between 
+    binary search and Hoare-partition (which also has right = mid, left = mid + 1 in the recursion). Another
+    thing to note is that when to return the mid, then right is nums.size() rather than nums.size() - 1 if 
+    one decides to use right = mid instead of right = mid - 1
+</p> 
+
+<pre><code> 
+// Forward declaration of isBadVersion API.
+bool isBadVersion(int version);
+
+class Solution {
+public:
+    int firstBadVersion(int n) {
+        int left = 1, right = n;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (isBadVersion(mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+};
+</code></pre>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 658. Find K Closest Elements</h3>
+        <h4>Posted on Oct 29, 2017</h4>
+<br>
+<p> Read more on binary search <a href="https://www.topcoder.com/community/data-science/data-science-tutorials/binary-search/">here</a>. The fact that input array is sorted and is an array suggests that
+    we should use binary search which has time complexity $O(\log n)$. If the input is list (linked list),
+    then we should use a different algorithm which deletes the left end or the right end (depending on
+    which one is farther) until the remaining list is of length $k$ and then we can return the list as our
+    result.
+</p> 
 
 <pre><code> 
 class Solution {
@@ -724,7 +1199,7 @@ public:
     int partition(vector&lt;int>& nums,int l,int r){
         int pivot = nums[r];
         int i = l;
-        for(int j = l;j < r;j++){
+        for(int j = l;j < r;++j){
             if(nums[j] >= pivot) swap(nums[i++],nums[j]);
         }
         swap(nums[i],nums[r]);
@@ -2323,264 +2798,11 @@ public:
 <br>
 <br>
 
-<div class="row">
-	<div class="col c12">
-		<h3>Leetcode 535. Encode and Decode TinyURL</h3>
-		<h4>Posted on Sep 10, 2017</h4>
-<br>
-<p>Basically we want to use $62^6 = 56,800,235,584$ to represent all the URLs for
-	all the websites (1.6 billion as of 2016 so 6 digits are sufficient). To achieve this, first idea is to design a hashing function. One can use the codes below to avoid conflicts but it will be slow eventually,
-	because towards the end, it will be harder and harder to find approporiate shorturl.
-	Similar idea, one can use md5/sha1 which takes "longurl + timestamp" as key and regenerate
-	hash codes when there are conflicts. Of course, when data gets very large and exceed memory 
-	size of one machine, one should use distributed SQL or NoSQL database to store key-value pair.
-	(also depending on the peak QPS: Queries Per Second).
-</p>
-<p>See <a href="http://blog.csdn.net/hgl868/article/details/7057843">here</a> for more details on the
-use of rand(), and srand() to generate pseudo-random number.</p>
-
-<pre><code>
-class Solution {
-public:
-    Solution() {
-        dict = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        short2long.clear();
-        long2short.clear();
-        srand(time(nullptr));
-    }
-
-    // Encodes a URL to a shortened URL.
-    string encode(string longUrl) {
-        if (long2short.find(longUrl) != long2short.end()) {
-            return "http://tinyurl.com/" + long2short[longUrl];
-        }
-        int idx;
-        string randStr;
-        for (int i = 0; i < 6; ++i) {
-            randStr.push_back(dict[rand() % 62]);
-        }
-        while (short2long.find(randStr) != short2long.end()) {
-            randStr[idx] = dict[rand() % 62];
-            idx = (idx + 1) % 5;
-        }
-        short2long[randStr] = longUrl;
-        long2short[longUrl] = randStr;
-        return "http://tinyurl.com/" + randStr;
-    }
-
-    // Decodes a shortened URL to its original URL.
-    string decode(string shortUrl) {
-        string randStr = shortUrl.substr(shortUrl.rfind("/") + 1);
-        return short2long.find(randStr) == short2long.end() ? shortUrl : short2long[randStr];
-    }
-
-private:
-    string dict;
-    unordered_map&lt;string, string&gt; short2long, long2short; 
-};
-</code></pre>
-<h3>Leetcode 534. Design TinyURL</h3>
-<p>The second way is to create a one-to-one mapping between base10 and base62. One can simply use base10/base62 as primary keys and longURL as values in SQL databases. 
-	We can increment the counter by 1 when a new
-link is added. When we want to add links distributedly, we can assign counter quota in advance to each machine (creating mapping in advance but leave value field empty) and then fill them out. For 
-more details on System Design, see this <a href="https://discuss.leetcode.com/topic/95853/a-complete-solution-for-tinyurl-leetcode-system-design/2">post</a>. In this kind of question,
-one should first be clear about the purpose (e.g. indexing pages in advance or on the fly) 
-by asking. Then one should figure out how many users, work load, QPS, read-write speed (read
-heavy or write heavy), and figure out
-which database to use (SQL vs NoSQL, row vs column, single machine vs distributed DB). 
-And design system algorithms (e.g. here is URLService class, including encode and decode API).
-One can further optimize using DB sharding (not only horizontal partitioning but
-also data replication) and cache server.</p>
-<pre><code>
-public class URLService {
-    HashMap&lt;String, Integer&gt; ltos;
-    HashMap&lt;Integer, String&gt; stol;
-    static int COUNTER;
-    String elements;
-    URLService() {
-        ltos = new HashMap&lt;String, Integer&gt;();
-        stol = new HashMap&lt;Integer, String&gt;();
-        COUNTER = 1;
-        elements = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    }
-    public String longToShort(String url) {
-        String shorturl = base10ToBase62(COUNTER);
-        ltos.put(url, COUNTER);
-        stol.put(COUNTER, url);
-        COUNTER++;
-        return "http://tiny.url/" + shorturl;
-    }
-    public String shortToLong(String url) {
-        url = url.substring("http://tiny.url/".length());
-        int n = base62ToBase10(url);
-        return stol.get(n);
-    }
-    
-    public int base62ToBase10(String s) {
-        int n = 0;
-        for (int i = 0; i < s.length(); i++) {
-            n = n * 62 + convert(s.charAt(i));
-        }
-        return n;
-        
-    }
-    public int convert(char c) {
-        if (c >= '0' && c <= '9')
-            return c - '0';
-        if (c >= 'a' && c <= 'z') {
-            return c - 'a' + 10;
-        }
-        if (c >= 'A' && c <= 'Z') {
-            return c - 'A' + 36;
-        }
-        return -1;
-    }
-    public String base10ToBase62(int n) {
-        StringBuilder sb = new StringBuilder();
-        while (n != 0) {
-            sb.insert(0, elements.charAt(n % 62));
-            n /= 62;
-        }
-        while (sb.length() != 6) {
-            sb.insert(0, '0');
-        }
-        return sb.toString();
-    }
-}
-</code></pre>
-	</div>
-</div>
-<br>
-<br>
 
 
 
-<div class="row">
-	<div class="col c12">
-		<h3>Leetcode 23. Merge k Sorted Lists</h3>
-		<h4>Posted on Sep 8, 2017</h4>
-<br>
-<p>Pay attention to the syntax that lambda expression cannot be used inside
-	priority_queue template and one should use <a href="http://www.geeksforgeeks.org/functors-in-cpp/">functor</a>. This is different from <a href="http://en.cppreference.com/w/cpp/algorithm/sort">sort</a>. For sorting, there are a few different ways of changing
-	 default comparator, either by overloading operators or using lambda expression/functor to create
-	 custom operator (in C++, default is std:less, and default is max heap for priority 
-	 queue, sorting order is increasing by fault). One can use functor for sort too but one should
-	 use cmp() instead of cmp. </p>
-	 <p>Advantage of C++ over Python in interview is that one can easily use min-heap by <pre><code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; Q; </code></pre></p>
-	 <p>For the question itself, there are two ways of solving this question. One is divide and 
-	 	conquer: merge 2 lists at one time, and do it from bottom-up approach. The other is use
-	 	extra space to store first node for each linked-list. Both approaches have the same time complexity: $O(n \ k \ log(k))$, where $n$ is average number of nodes in a list and $k$
-	 	is number of lists.</p>
-	 <p>Also pay attention to the difference of heap and priority_queue: see <a href="http://pages.cs.wisc.edu/~vernon/cs367/notes/11.PRIORITY-Q.html">here</a>. The one usually referred is called 
-	 	Binary Heap but there are many more variants of heaps and see this notes for time 
-	 	complexity comparisons <a href="http://www.eecs.wsu.edu/~ananth/CptS223/Lectures/heaps.pdf">link</a>.</p>
-
-<pre><code>
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode(int x) : val(x), next(NULL) {}
- * };
- */
-
-// Divide and Conquer
-class Solution {
-public:
-    ListNode* mergeKLists(vector&lt;ListNode*&gt;& lists) {
-        if (lists.size() == 0) return NULL;
-        int n = lists.size();
-        while (n > 1) {
-            int k = (n + 1) / 2;
-            for (int i = 0; i < n / 2; ++i) {
-                lists[i] = mergeTwoLists(lists[i], lists[i + k]);
-            }
-            n = k;
-        }
-        return lists[0];
-    }
-    
-    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-        ListNode* head = new ListNode(-1);
-        ListNode* cur = head;
-        while (l1 && l2) {
-            if (l1->val < l2->val) {
-                cur->next = l1;
-                l1 = l1->next;
-            } else {
-                cur->next = l2;
-                l2 = l2->next;
-            }
-            cur = cur->next;
-        }
-        if (l1) cur->next = l1;
-        if (l2) cur->next = l2;
-        return head->next;
-    }   
-};
-
-// priority queue
-struct cmp {
-    bool operator () (ListNode* a, ListNode* b) {
-        return a->val > b->val;
-    }
-};
-
-struct great {
-    bool operator () (int a, int b) {
-        return a > b;
-    }
-};
-
-class Solution {
-public:
-    ListNode* mergeKLists(vector&lt;ListNode*&gt;& lists) {
-        // first 10 lines are not related to question itself....
-        vector<int> m{2, 5, 2, 3, 4};
-        /*struct great {
-            bool operator () (int a, int b) {
-                return a > b;
-            }
-        }great;
-        sort(m.begin(), m.end(), great);*/
-        sort(m.begin(), m.end(), great());
-        for (int i = 0; i < m.size(); ++i) {
-            cout << m[i] << " ";
-        }
 
 
-        priority_queue&lt;ListNode*, vector&lt;ListNode*&gt;, cmp&gt; pq;
-        for (int i = 0; i < lists.size(); ++i) {
-            if (lists[i]) {
-                pq.push(lists[i]);
-            }
-        }
-        ListNode* head = nullptr;
-        ListNode* pre = nullptr;
-        while (!pq.empty()) {
-            ListNode* tmp = pq.top();
-            pq.pop();
-            if (!head) {
-                head = tmp;
-            }
-            else {
-                pre->next = tmp;
-            }
-            pre = tmp;
-            if (tmp->next) {
-                pq.push(tmp->next);
-            }
-            
-        }
-        return head;       
-    }
-};
-</code></pre>
-	</div>
-</div>
-<br>
-<br>
 
 <div class="row">
 	<div class="col c12">
