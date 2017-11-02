@@ -1,3 +1,151 @@
+/*
+Welcome to Facebook!
+
+This is just a simple shared plaintext pad, with no execution capabilities.
+
+When you know what language you'd like to use for your interview,
+simply choose it from the dropdown in the top bar.
+
+Enjoy your interview!
+  
+
+Hello, can you call in?
+    
+yes
+
+ok, I'm waiting for you to join the call
+    
+    can you call me the phone number?
+    there is some Internet connection issues with comcast, so I am using my phone hotspot
+    
+    that will be great. my number is 5305742695    
+    
+Ok, if you can't connect to the meeting in the link, I can call your phone instead
+What's your number?
+Ok, let me try to call that
+*/
+
+
+
+/*
+Question: Write a function that generates all the permutations of a set of characters and prints them
+
+Input:
+{'a', 'b', 'c'}
+
+Output:
+
+abc
+
+acb
+bac
+bca
+cab
+cba
+
+        root
+    a       b     c
+   /  \    /  \
+  b    c   a   c
+  /
+ c 
+*/
+l.append(1)
+dfs(l + [1], 
+A + B
+
+    
+
+void permuate(unordered_set<char>& s) {
+    unordered_set<char> visited;
+    string out;
+    permuateDFS(s, 0, visited, out); // here
+} 
+
+void permutateDFS(unordered_set<char>& s, int level, unordered_set<char>& visited, string& out) {
+    if (level == s.size()) {
+        cout < out << endl;
+    } else {
+        for (auto c : s) {
+            //char c = s[i];
+            if (visited.find(c) == visited.end()) {
+                visited.insert(c);
+                out.push_back(c);
+                permutateDFS(s, level + 1, visited, out);
+                out.pop_out();
+                visited.erase(visited.find(c));
+            }
+        }
+    }
+    return;
+}
+
+
+// Given a string S consisting of lowercase English alphabets, determine if you can make it a palindrome by removing at most 1 character.
+
+
+/*
+Input: abcdczba
+         l  r
+Output: True
+abcdcba
+
+Input: abcdcba
+          lr
+Output: True
+
+Input: azbcdcbaz
+        l      r
+Output: False
+*/
+
+
+
+bool isValid(string s, int left, int right) {
+    while (left < right) {
+        if (s[left++] != s[right--]) {
+            return False;
+        }
+    }
+    return True;
+}
+
+bool canRemoveAtMostOne(string s) {
+    left = 0;
+    right = s.size() - 1;
+    while (left < right) {
+        if (s[left] == s[right]) {
+            left++; right--;
+        } else {
+            return (isValid(s, left + 1, right) || isValid(s, left, right - 1));
+        }
+    }
+    return true;
+}
+
+string s1
+"actor" -> "cat" find analgorm
+
+unicode_str 
+hash
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Dropbox Second Round Phone Interview 
 // Oct 24, 2017
  -------------
