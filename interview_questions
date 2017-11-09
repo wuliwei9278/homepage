@@ -1,3 +1,176 @@
+Please use this Google doc to code during your interview. To free your hands for coding, we recommend that you use a headset or a phone with speaker option.
+
+Hello? Hi!
+
+Reverse the vowels in a string.
+
+E.g., “the cat” ⇒ “tha cet”
+2      5
+
+a e i o u 
+
+Two pointer solution:
+Time: O(n)
+Memory: O(1)
+
+
+void reverseInPlace(string& s) {
+  if (s.size() == 0) return;
+vector<char> vowels{‘a’,’e’,’i’,’o’,’u’};
+  int left = 0;
+  int right = s.size() - 1;
+  while (left < right) {
+    while (left < s.size() && vowels.find(s[left]) == vowels.end() )
+      left++;
+    while (right >= 0 && vowels.find(s[right]) == vowels.end())
+      right--;
+    if (left < right)
+      swap(s[left++], s[right--]);
+  }
+  return;
+}wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+
+
+
+
+2. Detect when there have been N failures in the last M seconds.
+
+while (true) {
+  DoWork();
+  bool did_fail = DidFail();
+  if (___________N failures in the last M seconds__________) {
+    break;
+  }
+}
+
+N = 3
+M = 2
+
+[----x----|---x-----|x--------|---------]
+                     ^ BREAK HERE
+ [                   ]
+
+
+
+M * 1000 
+
+[time1 time2 time3]
+
+
+Given API:
+getTimeMs() - Returns the current time in milliseconds
+DoWork()
+DidFail()
+M and N are static global constants
+
+vector<int> times;
+
+while (true) {
+  DoWork();
+  bool did_fail = DidFail();
+  int cur = getTimeMs();
+  times.push_back(cur);
+  if (isNFailureLastMSeconds(N, M)) {
+    break;
+  }
+}
+1 3 4  M = 2 N = 2
+i = 0 
+bool isNFailureLastMSeconds(int N, int M, vector<int>& times) {
+  int cnt = 1;
+for (int i = times.size() - 2; i >= 0; --i) {
+    if (times[times.size() - 1] - times[i]) <= M * 1000 {
+      cnt++;  
+    } else {
+break;
+}
+  }
+  return (cnt >= M); 
+}
+
+
+class EncodedWordDetector { 
+public: 
+  EncodedWordDetector(const string& secret); 
+  bool isPotentiallyEncodedWord(const string& test) const; 
+
+private:
+  string secret;
+}; 
+
+secret=“banana” test=”cololo” => True
+secret=”x” test=”xxxxxx” => False
+
+“b a n a n a”
+
+“c o l o x o ”
+b: c
+a: o
+n: l
+
+c: b
+o: a
+l: n
+
+bool isPotentiallyEncodedWord(const string& test) const {
+  unordered_map<char, char> m1;
+  unordered_map<char, char> m2;
+  if (secret.size() != test.size()) return false;
+  for (int i = 0; i < secret.size(); ++i) {
+    char c1 = secret[i], c2 = test[i];
+if (m1.find(c1) == m1.end() && m2.find(c2) == m2.end()) {
+  m1[c1] = c2;
+  m2[c2] = c1;
+} else if (m1.find(c1) != m1.end() && m2.find(c2) != m2.end()) {
+  if (m1[c1] != c2 || m2[c2] != c1) {
+    return false;
+  }
+} else {
+  return false;
+}
+  }
+  return true;
+}
+
+EncodedWordDetector(const std::set<string>& secret_words);
+
+“banana” test=”cololo
+a: 2   c:1
+b: 1   l:2
+n: 2   o:2
+
+banana, cloolo, bnaana, 
+a:1 3 5 o: 2 3 5, a: 2 3 5
+        
+a: index array
+b:
+24 characters
+24 letters
+
+length
+
+
+set<vector<char>> 
+
+secret_words: {banana, cololo, abcdef, hijklm, aaabbb, cccddd}
+c l o   b a n 
+cololo, banana  => abcbcb   
+abcdef, hijklm  => abcdef
+aaabbb, cccddd  => aaabbb
+
+abcbcb abcdef aaabbb
+aaabbb + 2
+cccddd
+hashtable key: cololo 
+  value: set<string>
+vector<unordered_set<string>> 
+
+secret_words: {banana, abcdef, aaabbb}
+sum of index
+
+test : eeefff  aaabbb
+
+
 /*
 Welcome to Facebook!
 

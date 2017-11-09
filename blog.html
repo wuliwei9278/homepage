@@ -106,7 +106,7 @@ function topFunction() {
 <div class="row">
     <div class="col c12">
         <h3>Summary of Commonly Used C++ Syntax for Leetcode (Unfinished and Keep Updating)</h3>
-        <h4>Posted on Oct 10, 2017</h4>
+        <h4>Posted on Oct 10, 2017 && Last Updated on Nov 4, 2017</h4>
 <br>
 <p> Since I am so used to searching everything whenever I need them, I think it may be a good idea
     to summarize what I have used so far in Leetcode. One can read more on range-based for loop 
@@ -200,6 +200,12 @@ unordered_set&lt;string> myset = {"yellow","green","blue"};
 string mystring = "red";
 myset.insert (mystring);
 // also use find, count as map/unordered_map
+unordered_set&lt;string> myset = {"Mercury","Venus","Earth",
+                                    "Mars","Jupiter","Saturn","Uranus","Neptune"};
+cout << "myset contains:";
+for (auto it = myset.begin(); it != myset.end(); ++it)
+    cout << " " << *it;
+cout << std::endl;
 
 // stack
 stack&lt;int> mystack;
@@ -227,6 +233,661 @@ while (!mypq.empty()) {
      cout << ' ' << mypq.top();
      mypq.pop();
 }                           
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 677. Map Sum Pairs</h3>
+        <h4>Posted on Nov 8, 2017</h4>
+<br>
+<p> Again, depends on which API Calls are more often: insert or sum.
+</p> 
+
+<pre><code> 
+public:
+    /** Initialize your data structure here. */
+    MapSum() {
+        
+    }
+    
+    void insert(string key, int val) {
+        m[key] = val;
+    }
+    
+    int sum(string prefix) {
+        int res = 0, n = prefix.size();
+        for (auto it = m.lower_bound(prefix); it != m.end(); ++it) {
+            if (it->first.substr(0, n) != prefix) break;
+            res += it->second;
+        }
+        return res;
+    }
+
+private:
+     map&lt;string, int> m;
+};
+
+
+class MapSum {
+public:
+    /** Initialize your data structure here. */
+    MapSum() {
+        
+    }
+    
+    void insert(string key, int val) {
+        int diff = val - m[key].first, n = key.size();
+        m[key].first = val;
+        for (int i = n - 1; i > 0; --i) {
+            m[key.substr(0, i)].second += diff;  // only need to add the diff, due to overwrite
+        }
+    }
+    
+    int sum(string prefix) {
+        return m[prefix].first + m[prefix].second;
+    }
+
+private:
+    // in the pair, first represents the value for exact match and second represents 
+    // prefixes containing but not exact match
+    unordered_map&lt;string, pair&lt;int, int>> m;  
+};
+</code></pre>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 159. Longest Substring with At Most Two Distinct Characters</h3>
+        <h4>Posted on Nov 8, 2017</h4>
+<br>
+<p> Using a sliding window with a hashmap. One can either use the hashmap to store the counts, or one can use the hashmap
+    to store the last index of apperance. But the idea is the same.
+</p> 
+
+<pre><code> 
+// store the counts
+class Solution {
+public:
+    int lengthOfLongestSubstringTwoDistinct(string s) {
+        int res = 0, left = 0;
+        unordered_map&lt;char, int> m;
+        for (int i = 0; i < s.size(); ++i) {
+            ++m[s[i]];
+            while (m.size() > 2) {
+                if (--m[s[left]] == 0) {
+                    m.erase(s[left]);
+                }
+                left++;
+            }
+            res = max(res, i - left + 1);
+        }
+        return res;
+    }
+};
+
+// store the last index of apperance
+class Solution {
+public:
+    int lengthOfLongestSubstringTwoDistinct(string s) {
+        int res = 0, left = 0;
+        unordered_map&lt;char, int> m;
+        for (int i = 0; i < s.size(); ++i) {
+            m[s[i]] = i;
+            while (m.size() > 2) {
+                if (m[s[left]] == left) m.erase(s[left]);
+                ++left;
+            }
+            res = max(res, i - left + 1);
+        }
+        return res;
+    }
+};
+</code></pre>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 406. Queue Reconstruction by Height</h3>
+        <h4>Posted on Nov 8, 2017</h4>
+<br>
+<p> The idea is to sort the people by height from highest to lowest and then by the number of poeple with higher or equal height
+    in front of him from largest to smallest. Then insert them one by one using the second index as offset from the front. Here, 
+    we assume the values given are indeed valid. Using vector may not be the most efficient way compared to using linked list.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;pair&lt;int, int>> reconstructQueue(vector&lt;pair&lt;int, int>>& people) {
+        sort(people.begin(), people.end(), [](const pair&lt;int, int>& a, const pair&lt;int, int>& b) {
+            return a.first > b.first || (a.first == b.first && a.second < b.second);
+        });
+        vector&lt;pair&lt;int, int>> res;
+        for (auto a : people) {
+            res.insert(res.begin() + a.second, a);
+        }
+        return res;
+    }
+};
+</code></pre>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 162. Find Peak Element</h3>
+        <h4>Posted on Nov 7, 2017</h4>
+<br>
+<p> If one really understands binary search, this medium level questions become an easy one as soon as one 
+    realize it is just a sequnce of no's followed by yes's using the predicate nums[mid] >= nums[mid + 1]
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    int findPeakElement(vector&lt;int>& nums) {
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] >= nums[mid + 1]) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+};
+</code></pre>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 369. Plus One Linked List</h3>
+        <h4>Posted on Nov 6, 2017</h4>
+<br>
+<p> This question I think is quite interesting. At first look, it is not quite simple. Since for linked lists, it is 
+    hard to traverse in the reverse way. So one naive idea is to reverse the list first and performing "add 1"
+    operation before reversing back to the original order. It is okay but not very efficient. The following method 
+    is much better, since it can change the node value in the recursion and returns 1 if carry exists, otherwise
+    return 0 but modifying the values in place.
+</p> 
+
+<pre><code> 
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* plusOne(ListNode* head) {
+        if (!head) return head;
+        int carry = helper(head);
+        if (carry == 0) return head;
+        ListNode* res = new ListNode(1);
+        res->next = head;
+        return res;
+    }
+    
+    int helper(ListNode* head) {
+        if (!head) return 1;
+        int carry = helper(head->next);
+        int sum = head->val + carry;
+        head->val = sum % 10;
+        //cout << sum;
+        return sum / 10;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 568. Maximum Vacation Days</h3>
+        <h4>Posted on Nov 6, 2017</h4>
+<br>
+<p> This question should be solved using dynamic programming technique.
+    Usually when the space complexity in $O(n^2)$, then it should be optimized till $O(2n)$ 
+    using two vectors instead one matrix. And here, one can loop through the matrix from 
+    day 0 till day $k - 1$ or reversely. The solution below is doing it from day 0, and
+    therefore we should initialize the dp array at day -1 by making only the starting point to
+    be 0, the rest to be INT_MIN.  
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    int maxVacationDays(vector&lt;vector&lt;int>>& flights, vector&lt;vector&lt;int>>& days) {
+        // flights: n by n, days: n by k
+        int n = flights.size(), k = days[0].size();
+        vector&lt;int> dp(n, INT_MIN);
+        dp[0] = 0;
+        for (int j = 0; j < k; ++j) {
+            // dp stores the previous week maximum number of holidays
+            // max over staying at the same city or going somewhere else
+            vector&lt;int> t(n, INT_MIN);
+            for (int p = 0; p < n; ++p) {
+                for (int i = 0; i < n; ++i) {
+                    if (i == p || flights[p][i]) {
+                        t[i] =  max(t[i], dp[p] + days[i][j]);
+                    }
+                }
+            }
+            dp = t;
+        }
+        int res = 0;
+        for (int i = 0; i < dp.size(); ++i) {
+            //cout << dp[i] << " ";
+            res = max(res, dp[i]);
+        }
+        return res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 681. Next Closest Time</h3>
+        <h4>Posted on Nov 5, 2017</h4>
+<br>
+<p> Since 1440 is a very small number, we can actually do brute force and check if the next time has all digits in original time 
+    string.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    string nextClosestTime(string time) {
+        string res = "0000";
+        vector&lt;int> v{600, 60, 10, 1};
+        int found = time.find(":");
+        int cur = stoi(time.substr(0, found)) * 60 + stoi(time.substr(found + 1));
+        for (int i = 1, d = 0; i <= 1440; ++i) {
+            int next = (cur + i) % 1440;
+            for (d = 0; d < 4; ++d) {
+                res[d] = '0' + next / v[d]; 
+                next %= v[d];
+                if (time.find(res[d]) == string::npos) break;
+            }
+            if (d >= 4) break;
+        }
+        return res.substr(0, 2) + ":" + res.substr(2);
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 683. K Empty Slots</h3>
+        <h4>Posted on Nov 5, 2017</h4>
+<br>
+<p> See Comments.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    int kEmptySlots(vector&lt;int>& flowers, int k) {
+        // flowers record day (starting from 0), flower (starting from 1) key-value pair
+        // days record flower(starting from 0), day (starting from 1) key-value pair
+        vector&lt;int> days(flowers.size(), 0);
+        for (int i = 0; i < flowers.size(); ++i) {
+            days[flowers[i] - 1] = i + 1; 
+        }
+        /*for (int i = 0; i < days.size(); ++i)
+            cout << days[i] << " ";*/
+        
+        // the problem is converted to following problem now
+        // days[i] > days[left] && days[i] > days[right] for any left < i < right 
+        // and we require right = left + k + 1
+        int left = 0, right = k + 1;
+        int res = INT_MAX;
+        for (int i = 1; right < days.size(); ++i) {
+            if (days[i] > days[left] && days[i] > days[right]) {
+                continue;
+            }
+            // we reach boundary of sliding window and found what we want
+            if (i == right) {
+                res = min(res, max(days[left], days[right]));
+            } 
+            // days[i] does not satisfy the criteria
+            // days: 2 4 1 3 2 1 and k = 2
+            //       [     ] 
+            // can skip 4 1 3 2, go to 1 3 2 1 directly,
+            // due to the fact 4 > 2 (or 3) and 1 < 2 (or 3) => 1 < 4
+            left = i;
+            right = i + k + 1;
+            
+        }
+        return (res == INT_MAX) ? -1 : res;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 305. Number of Islands II</h3>
+        <h4>Posted on Nov 5, 2017</h4>
+<br>
+<p> Using <a href="https://www.cs.princeton.edu/~rs/AlgsDS07/01UnionFind.pdf">unionFind</a> to solve the problem instead of bfs and dfs. UnionFind has
+    time complexity of $O((M + N) \log N)$ for M operations and N nodes.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;int> numIslands2(int m, int n, vector&lt;pair&lt;int, int>>& positions) {
+        vector&lt;int> res;
+        if (m <= 0 || n <= 0) return res;
+        vector&lt;int> roots(m * n, -1);
+        int cnt = 0;
+        vector&lt;vector&lt;int> > dirs{{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
+        for (auto a : positions) {
+            int id = n * a.first + a.second;
+            roots[id] = id;
+            ++cnt;
+            for (auto d : dirs) {
+                int x = a.first + d[0], y = a.second + d[1];
+                int cur_id = n * x + y;
+                if (x < 0 || x >= m || y < 0 || y >= n || roots[cur_id] == -1) continue;
+                int new_id = findRoots(roots, cur_id);
+                if (id != new_id) {
+                    roots[id] = new_id;
+                    id = new_id;
+                    --cnt;
+                }
+            }
+            res.push_back(cnt);
+        }
+        return res;
+    }
+       
+    int findRoots(vector&lt;int> &roots, int id) {
+        while (id != roots[id]) {
+            roots[id] = roots[roots[id]];
+            id = roots[id];
+        }
+        return id;
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 463. Island Perimeter</h3>
+        <h4>Posted on Nov 4, 2017</h4>
+<br>
+<p> It is wrong to only find the maximum horizontal and vertical range. One approach is to scan for all i, j and only examine
+    neighbors to the left and to the top. The other approach is doing DFS as before but need to pass the int ans by pointer (or
+    by reference) and update it during recursion. The advantage of second approach over first one is when we know there 
+    is only one connected island within in very large rectangle. Then we do not need to travese every single little in the
+    huge rectangle, which could be a waste of time.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    int islandPerimeter(vector&lt;vector&lt;int>>& grid) {
+        int res = 0;
+        if (grid.empty() || grid[0].empty()) {
+            return res;
+        }
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 1) {
+                    res += 4;
+                    if (i != 0 && grid[i - 1][j] == 1) {
+                        // here, substracting 2 because the side has been added twice by 
+                        // the square to left and this square
+                        res -= 2;  
+                    } 
+                    if (j != 0 && grid[i][j - 1] == 1) {
+                        res -= 2;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
+
+class Solution {
+public:
+    void dfs(vector&lt;vector&lt;int>>& b, int *ans, int i, int j) {
+        if (i < 0 || i >= b.size() || j < 0 || j >= b[0].size() || b[i][j] != 1)
+            return;
+        b[i][j] = -1; // mark it as visited
+        *ans += (j + 1 >= b[0].size() || b[i][j+1] == 0) /* right */ +
+                (i - 1 < 0            || b[i-1][j] == 0) /* top */ +
+                (j - 1 < 0            || b[i][j-1] == 0) /* left */ +
+                (i + 1 >= b.size()    || b[i+1][j] == 0) /* bottom */;
+        dfs(b, ans, i, j + 1);
+        dfs(b, ans, i - 1, j);
+        dfs(b, ans, i, j - 1);
+        dfs(b, ans, i + 1, j);
+        return;
+    }
+    int islandPerimeter(vector&lt;vector&lt;int>>& grid) {
+        int ans = 0, i, j;
+        for (i = 0; i < grid.size(); i++) {
+            for (j = 0; j < grid[0].size(); j++) {
+                if (grid[i][j]) {
+                    dfs(grid, &ans, i, j);
+                    return ans;
+                }
+            }
+        }
+        return 0;
+    }
+    
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 200. Number of Islands</h3>
+        <h4>Posted on Nov 4, 2017</h4>
+<br>
+<p> Either by BFS or DFS.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    int numIslands(vector&lt;vector&lt;char>>& grid) {
+        if (grid.empty() || grid[0].empty()) {
+            return 0;
+        }
+        int m = grid.size(), n = grid[0].size(), res = 0;
+        vector&lt;vector&lt;bool>> visited(m, vector&lt;bool>(n, false));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == '1' && visited[i][j] == false) {
+                    numIslandsDFS(grid, visited, i, j);
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+    
+    void numIslandsDFS(vector&lt;vector&lt;char>>& grid, vector&lt;vector&lt;bool>>& visited, 
+                      int i, int j) {
+        // At first, I made a bug by i <= 0, j <= 0
+        // So stupid
+        if (i < 0 || i >= grid.size()) return;
+        if (j < 0 || j >= grid[0].size()) return;
+        if (grid[i][j] == '0' || visited[i][j] == true) return;
+        visited[i][j] = true;
+        numIslandsDFS(grid, visited, i - 1, j);
+        numIslandsDFS(grid, visited, i + 1, j);
+        numIslandsDFS(grid, visited, i, j - 1);
+        numIslandsDFS(grid, visited, i, j + 1);
+    }
+};
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 155. Min Stack</h3>
+        <h4>Posted on Nov 4, 2017</h4>
+<br>
+<p> I think previously when I did it, I used the two stacks approach, which is okay but not as compact as the codes below. 
+    Basically the idea is that one can store the previous min_val in the same stack, separting the actual values.
+</p> 
+
+<pre><code> 
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    MinStack() {
+        min_val = INT_MAX;
+    }
+    
+    // -2 0 -3 -3
+    // INT_MAX -2 0 -2 -3  -3 -3 
+    void push(int x) {
+        // Note that here, we should include equal sign
+        if (x <= min_val) {
+            s.push(min_val);
+            min_val = x;
+        }
+        s.push(x);
+    }
+    
+    void pop() {
+        int x = s.top();
+        s.pop();
+        if (x == min_val) {
+            min_val = s.top();
+            s.pop();
+        }
+    }
+    
+    int top() {
+        return s.top();
+    }
+    
+    int getMin() {
+        return min_val;
+    }
+    
+private:
+    int min_val;
+    stack&lt;int> s;
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack obj = new MinStack();
+ * obj.push(x);
+ * obj.pop();
+ * int param_3 = obj.top();
+ * int param_4 = obj.getMin();
+ */
+</code></pre>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 4. Median of Two Sorted Arrays</h3>
+        <h4>Posted on Nov 4, 2017</h4>
+<br>
+<p> This question is pretty hard. It uses the divide and conquer idea. Finding k-th element at each step can be simplied as
+    finding only one half of each array. The reason is that if nums1[m1 - 1] < nums2[m2 - 1], then the k-th element has to
+    be to the right of cut in the num1, and to the left of the cut in the nums2. Otherwise, proof by contradition, something
+    goes wrong.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    // 3
+    // 1 2
+    
+    // 1 2
+    // 3 4
+    int findKth(vector&lt;int>& nums1, int i, vector&lt;int>& nums2, int j, int k) {
+        if (nums1.size() - i > nums2.size() - j) {
+            return findKth(nums2, j, nums1, i, k);
+        }
+        if (nums1.size() == i) {
+            return nums2[j + k - 1];
+        }
+        if (k == 1) {
+            return min(nums1[i], nums2[j]);
+        }
+        int m1 = min(i + k / 2, static_cast&lt;int>(nums1.size()));
+        // i + j + k = m1 + m2
+        int m2 = i + j + k - m1;
+        if (nums1[m1 - 1] < nums2[m2 - 1]) {
+            // this means k-th element is to the right of nums1 but to the left of nums2
+            // excluding cut-off point, since it cannot be the res
+            return findKth(nums1, m1, nums2, j, k - (m1 - i));
+        } else if (nums1[m1 - 1] > nums2[m2 - 1]) {
+            return findKth(nums1, i, nums2, m2, k - (m2 - j));
+        } else {
+            return nums1[m1 - 1];
+        }
+    }
+    
+    double findMedianSortedArrays(vector&lt;int>& nums1, vector&lt;int>& nums2) {
+        int total = nums1.size() + nums2.size();
+        if (total % 2 == 1) {
+            return static_cast&lt;double>(findKth(nums1, 0, nums2, 0, (total + 1) / 2));
+        } else {
+            return static_cast&lt;double>(findKth(nums1, 0, nums2, 0, total / 2) 
+                                        + findKth(nums1, 0, nums2, 0, total / 2 + 1)) / 2.0;
+        }
+    }
+};
 </code></pre>
     </div>
 </div>
@@ -3797,6 +4458,21 @@ def poorPigs(self, buckets, minutesToDie, minutesToTest):
 
 	<br>
 	<br>
+
+<div class="row">
+        <div class="col c12">
+            <h3>Notes on Static keywords</h3>
+            <h4>Posted on Nov 7, 2017</h4> 
+            <p> Read the <a href="http://www.geeksforgeeks.org/static-keyword-cpp/
+">article</a> to know more about how to use static keyword. And pay attention that one should use namespace instead of static method for a class
+if it does not use static variables in the class at all. Use the unnamed namespace if one wants the function to last till the end of lifetime. </p>
+
+        </div>
+    </div>
+
+    <br>
+    <br>
+
 
 	<div class="row">
 		<div class="col c12">
