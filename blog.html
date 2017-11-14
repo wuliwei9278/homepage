@@ -232,12 +232,259 @@ mypq.push(25);
 while (!mypq.empty()) {
      cout << ' ' << mypq.top();
      mypq.pop();
-}                           
+}             
+// cannnot iterate priority_queue, has to pop out one by one
+// https://stackoverflow.com/questions/20826078/priority-queue-comparison
+std::priority_queue&lt;int, std::vector&lt;int>, std::less&lt;int> > pq;  
+// priority queue
+struct cmp {
+    bool operator () (ListNode* a, ListNode* b) {
+        return a->val > b->val;
+    }
+};
+
+struct great {
+    bool operator () (int a, int b) {
+        return a > b;
+    }
+};
+sort(m.begin(), m.end(), great());
+// i prefer functor over function pointer (lambda operator combined with decltype, which can extract type of varaible)
+priority_queue&lt;ListNode*, vector&lt;ListNode*&gt;, cmp&gt; pq;            
+
+auto cmp = [](pair&lt;string, int>& a, pair&lt;string, int>& b) {
+    return a.second < b.second || (a.second == b.second && a.first > b.first);
+};
+priority_queue&lt;pair&lt;string,int>, vector&lt;pair&lt;string,int>>, decltype(cmp)> q(cmp);
 </code></pre>
-    </div>
+</div>
 </div>
 <br>
 <br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 311. Sparse Matrix Multiplication</h3>
+        <h4>Posted on Nov 12, 2017</h4>
+<br>
+<p> To be honest, I feel it stupid to store sparse matrix in the dense form
+    and then try to optimize speed. I think it is a good question only if both input
+    and output form is COO, CSC or CSR format.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;vector&lt;int>> multiply(vector&lt;vector&lt;int>>& A, vector&lt;vector&lt;int>>& B) {
+        vector&lt;vector&lt;int>> res(A.size(), vector&lt;int>(B[0].size()));
+        for (int i = 0; i < A.size(); ++i) {
+            for (int k = 0; k < A[0].size(); ++k) {
+                if (A[i][k] != 0) {
+                    for (int j = 0; j < B[0].size(); ++j) {
+                        if (B[k][j] != 0) res[i][j] += A[i][k] * B[k][j];
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
+
+class Solution {
+public:
+    vector&lt;vector&lt;int>> multiply(vector&lt;vector&lt;int>>& A, vector&lt;vector&lt;int>>& B) {
+        vector&lt;vectorlt;int>> res(A.size(), vector&lt;int>(B[0].size()));
+        vector&lt;vector&lt;pair &lt; int, int>>> v(A.size(), vector&lt;pair&lt;int,int>>());
+        for (int i = 0; i < A.size(); ++i) {
+            for (int k = 0; k < A[i].size(); ++k) {
+                if (A[i][k] != 0) v[i].push_back({k, A[i][k]});
+            }
+        }
+        for (int i = 0; i < A.size(); ++i) {
+            for (int k = 0; k < v[i].size(); ++k) {
+                int col = v[i][k].first;
+                int val = v[i][k].second;
+                for (int j = 0; j < B[0].size(); ++j) {
+                    res[i][j] += val * B[col][j];
+                }
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+ </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 347. Top K Frequent Elements</h3>
+        <h4>Posted on Nov 12, 2017</h4>
+<br>
+<p> See description of previous question.
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;string> topKFrequent(vector&lt;string>& words, int k) {
+        vector&lt;string> res;
+        unordered_map&lt;string, int> freq;
+        vector&lt;set&lt;string>> v(words.size() + 1, set&lt;string>());
+        for (string word : words) ++freq[word];
+        for (auto a : freq) {
+            v[a.second].insert(a.first);
+        }
+        for (int i = v.size() - 1; i >= 0; --i) {
+            if (k <= 0) break;
+            vector&lt;string> t(v[i].begin(), v[i].end());
+            if (k >= t.size()) {
+                res.insert(res.end(), t.begin(), t.end());
+            } else {
+                res.insert(res.end(), t.begin(), t.begin() + k);
+            }
+            k -= t.size();
+        }
+        return res;
+    }
+};
+</code></pre>
+ </div>
+</div>
+<br>
+<br>
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 347. Top K Frequent Elements</h3>
+        <h4>Posted on Nov 12, 2017</h4>
+<br>
+<p> Borrow idea from finding k largest elements in an array / in a stream (see <a href="http://www.geeksforgeeks.org/?p=2392">here</a>). 
+    There, the optimal solution is to use min heap of size k. (If finding k-th largest element in an array, then one should use 
+    quickselect algorithm). This approach has time complexity of $O(nlogk)$ which is useful when k is much smaller than n.
+    Space we need only $O(k)$ compared to $O(n)$. If space is not an issue, then using counting sort idea is useful.
+    A similar question is finding k most frequent words in a file (see <a href="http://www.geeksforgeeks.org/find-the-k-most-frequent-words-from-a-file/">ereh</a>) and one need to turn to trie tree to store the counts efficiently. 
+</p> 
+
+<pre><code> 
+struct cmp {
+    bool operator() (pair&lt;int, int>& a, pair&lt;int, int>& b) {
+        return a.first > b.first;
+    }
+};
+
+class Solution {
+public:
+    vector&lt;int> topKFrequent(vector&lt;int>& nums, int k) {
+        unordered_map&lt;int, int> cnts;
+        for (int x : nums) ++cnts[x];
+        // use min heap of size k, time takes O(nlogk)
+        // only use O(k) memory instead of O(n) in other approaches
+        priority_queue&lt;pair&lt;int, int>, vector&lt;pair&lt;int, int>>, cmp> pq;
+        for (auto it = cnts.begin(); it != cnts.end(); ++it) {
+            int cnt = it->second, val = it->first;
+            cout << cnt << " " << val << endl;
+            if (pq.empty() || pq.size() < k) {
+                pq.emplace(cnt, val);
+            } else {                                 
+                //cout << "top" << pq.top().first << endl; 
+                if (pq.top().first < cnt) {
+                    pq.pop();
+                    pq.emplace(cnt, val);
+                }
+            }
+        }
+        vector&lt;int> res;
+        // O(klogk)
+        while (!pq.empty()) {
+            pair&lt;int, int> t = pq.top(); 
+            pq.pop();
+            res.push_back(t.second);
+        }
+        sort(res.begin(), res.end());  // O(klog(k))
+        return res;
+    }
+};
+
+
+class Solution {
+public:
+    vector&lt;int> topKFrequent(vector&lt;int>& nums, int k) {
+        unordered_map&lt;int, int> m;
+        vector&lt;vector<int>> bucket(nums.size() + 1);
+        vector&lt;int> res;
+        for (auto a : nums) ++m[a];
+        for (auto it : m) {
+            bucket[it.second].push_back(it.first);
+        }
+        for (int i = nums.size(); i >= 0; --i) {
+            for (int j = 0; j < bucket[i].size(); ++j) {
+                res.push_back(bucket[i][j]);
+                if (res.size() == k) return res;
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+ </div>
+</div>
+<br>
+<br>
+
+
+<div class="row">
+    <div class="col c12">
+        <h3>Leetcode 187. Repeated DNA Sequences</h3>
+        <h4>Posted on Nov 10, 2017</h4>
+<br>
+<p> If we do not need to worry about space we used for hashtable, then the first solution is okay. However,
+    it is a huge waste of time to use 8 bits for each A, C, G, T, especially when there are a lot of those.
+    We can simply use two bits to represent. 
+</p> 
+
+<pre><code> 
+class Solution {
+public:
+    vector&lt;string> findRepeatedDnaSequences(string s) {
+        unordered_set&lt;string> res, st;
+        for (int i = 0; i + 10 <= s.size(); ++i) {
+            string t = s.substr(i, 10);
+            if (st.count(t)) res.insert(t);
+            else st.insert(t);
+        }
+        return vector&lt;string>{res.begin(), res.end()};
+    }
+};
+
+class Solution {
+public:
+    vector&lt;string> findRepeatedDnaSequences(string s) {
+        unordered_set&lt;string> res;
+        unordered_set&lt;int> st; // store those appearing at least once
+        unordered_map&lt;int, int> m{{'A', 0}, {'C', 1}, {'G', 2}, {'T', 3}};
+        int cur = 0, i = 0;
+        while (i < 9) cur = cur << 2 | m[s[i++]];
+        while (i < s.size()) {
+            // in total, we use 20 bits for 10 symbols, and mask is 18 bits
+            // therefore the mask is 0x3ffff or 0b11...11 (in total 18 1's)
+            cur = ((cur & 0x3ffff) << 2) | (m[s[i++]]);
+            if (st.count(cur)) res.insert(s.substr(i - 10, 10));
+            else st.insert(cur);
+        }
+        return vector&lt;string>(res.begin(), res.end());
+    }
+};
+</code></pre>
+ </div>
+</div>
+<br>
+<br>
+
 
 
 <div class="row">
@@ -298,6 +545,8 @@ private:
     unordered_map&lt;string, pair&lt;int, int>> m;  
 };
 </code></pre>
+ </div>
+</div>
 <br>
 <br>
 
@@ -350,6 +599,8 @@ public:
     }
 };
 </code></pre>
+ </div>
+</div>
 <br>
 <br>
 
@@ -379,6 +630,8 @@ public:
     }
 };
 </code></pre>
+ </div>
+</div>
 <br>
 <br>
 
@@ -408,6 +661,8 @@ public:
     }
 };
 </code></pre>
+ </div>
+</div>
 <br>
 <br>
 
@@ -4458,6 +4713,26 @@ def poorPigs(self, buckets, minutesToDie, minutesToTest):
 
 	<br>
 	<br>
+
+
+
+
+
+<div class="row">
+        <div class="col c12">
+            <h3>Recalling Java</h3>
+            <h4>Posted on Nov 9, 2017</h4> 
+            <p> Found a java libaray on recommender systems called <a href="https://github.com/guoguibing/librec">libRec</a> that I decided to pick up Java which I learnt as my first programming language during second year of my undergradaute study. One can install JDK (including JRE, see difference<a href="https://stackoverflow.com/questions/1906445/what-is-the-difference-between-jdk-and-jre">here</a>)  by following the instructions <a href="https://www3.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html">here</a>. For one single file, one can run javac helloworld.java and java helloworld to run the program. (See class file <a href="https://en.wikipedia.org/wiki/Java_class_file">here</a>). For packages, usually people use maven and one can download following <a href="https://stackoverflow.com/questions/12076326/how-to-install-maven2-on-redhat-linux">link</a> here. Read more about Maven on wiki page <a href="https://en.wikipedia.org/wiki/Apache_Maven">here</a> and this <a href="https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html">tutorial</a>. 
+            On Java Annoatations, such as @override, read more <a href="https://docs.oracle.com/javase/tutorial/java/annotations/predefined.html">here</a>. I don't know much about <a href="https://en.wikipedia.org/wiki/Java_Web_Start">Java Web Start</a> but maybe I should learn it
+            later.
+
+            </p>
+
+        </div>
+    </div>
+
+    <br>
+    <br>
 
 <div class="row">
         <div class="col c12">
