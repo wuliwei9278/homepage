@@ -249,7 +249,8 @@ struct great {
     }
 };
 sort(m.begin(), m.end(), great());
-// i prefer functor over function pointer (lambda operator combined with decltype, which can extract type of varaible)
+// I prefer functor over function pointer (i.e. lambda operator combined with
+// decltype, which can extract type of varaible)
 priority_queue&lt;ListNode*, vector&lt;ListNode*&gt;, cmp&gt; pq;            
 
 auto cmp = [](pair&lt;string, int>& a, pair&lt;string, int>& b) {

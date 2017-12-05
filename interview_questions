@@ -1,3 +1,73 @@
+## Linkedin Interview on 11/15
+0<=1/(1+exp(-z))<=1
+x1, x2, ..., xn \in R^k
+w \in R^k
+w^T X \in R
+z = w^T x 
+p(x in class 1) = 1/(1+exp(-w^T x))
+log-Likelihood l(w)
+log(p(x in class 1)) = -\sum_i (log(1+exp(-W^T x_i))) + |w|_2^2
+choose i
+w = w - stepsize * grad
+
+1/(1+exp(-w^T x_i) * exp(-w^T x_i) * -x_i + 2 * w
+nuclear matrix |X|_* 
+
+/\
+\/ 
+exp(w1^T x)/(exp(w1^T x) + exp(w2^T x) + ....)
+
+confusion matrix
+positive negative
+true/false true/false
+precision = true positive / all predicted as positive
+recall = true positive / all positives
+MSE = bias^2 + variance
+E(x-
+
+//////////////////////////////////////////////////////////////////////////////////////
+Input:
+Billions of training examples in a file. Each example has one of 4 class labels
+Output:
+Select Mc random samples from each class c={1, ..., 4}
+
+reservior sampling
+
+n is number of all in class i
+wc -l 
+vector<int> class1(k, 0);
+vector<int> class2(k, 0);
+if (class == 1) {
+    selectRandom(stream, k, class1);
+} else if (class == 2) {
+    selectRandom(stream, k, class2);
+
+// for one class
+vector<int> selectRandom(vector<int> stream, int k, vector<int>& reservior) {
+    // choose k out of n 
+    //vector<int> reservior(k, 0);
+    for (int i = 0; i < k; ++i) {
+        reservior[i] = stream[i];
+    }
+    for (int i = k; i < stream.size(); ++i) {
+        int j = rand() % (i + 1);
+        if (j < k) {
+            reservior[j] = stream[i];
+        }
+    }
+    return reservior;
+} 
+
+with open("text", "rb") as f:
+    for line in f:
+        
+statement p(each element being selected) = k / n
+for the last element 
+p(last one) = k / (n - 1) * (n - 1) / n 
+
+
+
+
 Please use this Google doc to code during your interview. To free your hands for coding, we recommend that you use a headset or a phone with speaker option.
 
 Hello? Hi!
