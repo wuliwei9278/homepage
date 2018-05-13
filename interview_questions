@@ -1,3 +1,172 @@
+我的FLAAGD实习面试经验教训
+写project report写累了，写下申请总结吧。攒下人品，希望我的股票不要再一星期跌4000刀了。
+今年大概是我过去三年找实习最顺利的一年了，虽然到目前为止也就一个fb的offer，其他的要么面完没消息(估计默拒，Apple两个组)，要么还没面就不面了（Microsoft），
+要么面挂了(Amazon， Dropbox， Google), 要么进度太慢面了一半（Linkedin）。好像也是这些年拿到面试最多的一次。所以首先想说的是，首先也许总体上找工作是越来越难，
+拿到面试也越来越难，但是不代表每个人都越来越难，作为一个人，改变不了总体的情况怎么样，比如说我改变不了税改会怎么变，所以哪怕对奖学金收税，那我也只能想办法
+应对，找工作是同样的道理，我们唯一能做的就是让自己的简历更好看，这样可以更容易过简历关，然后提高自己水平，让自己更容易过面试，无论面试官是谁，到底是什么样的
+人。 我们不能哭，因为这世界没人同情眼泪，但是不放弃一直努力的人会得到尊重，这是我打篮球懂得的道理，摔倒了就站起来然后fight back。运气可以很差（我经历过因为生病延迟面试然后pass完正好碰到hiring freeze），可以碰到很不好的面试官（正好面完就要离职的面试官，一直在忙自己交接工作一直
+敲字然后全程不理你），我们要做的呢就是尽量让自己变得强大，一直努力，不拿到第一个offer就不放弃，或者更好的不拿到很多offer前都不要放弃，把命运掌握在自己
+手里永远比把命运交给别人的好。我们一路上会碰到很多人，有的人只和对自己有用的人做朋友，有的人却会真的带你一把给你很多宝贵的建议和帮助，有的人天生高傲以出身为豪，
+有的人内心广阔保持谦逊。珍惜那些一直在你身边鼓励你的人，看人不要只看表面，有时候人品比很多其他都重要。我觉得我的导师们是我的榜样，一辈子可以学习的人。
+说远了，我和去年比有几个进步，我觉得大家可以借鉴，仅供参考，自己判断合不合适。
+1. 我首先选择了从Python换到了C++刷题，因为我之前面试的时候发现了语言鄙视链，很多写Java的engineer也许都不喜欢python，甚至内心对你的第一判断就是你
+只会python，去年面SNAP的时候我用python写的，面试官让我一行一行解释，说自己看不懂python。这又提醒了我，大家面试的时候，一定不要表现的过于有自信，
+觉得自己啥都会，哪怕面试官水平没你高，不懂你写的高深算法，但是他是面试官就按他的想法走吧，哪怕他是错的，最后写的让他觉得对的也会让你过的。。我有一回
+面完发现自己按着面试官写的有bug但是也过了，还有一回硬和面试官死磕，因为我觉得我可以证明我的算法和他的标答是equivalent，花了好久也没有让面试官理解，
+最后也挂了哪怕我最后还是写了面试官的标答，我猜feedback是性格不好，有错不肯承认。反正大家就觉得面试官是你的boss就好了，大公司还好，反正也不是你真正的boss，
+小公司如果实在不喜欢就选择挂了吧，早结束痛苦更好，别去了最后后悔。我现在真的蛮庆幸我最开始选导师，基本系里所有导师都不要我的，要是要了我，我就没办法选择
+新来的老师做我现在喜欢的科研了哈哈，千里马也需要伯乐，特别我这种最开始没找到自己喜欢的内容然后科研做的想退学的人。既然说到了刷题，就继续说说，我觉得
+刷题不是目的，刷题对我来说更像是一种做puzzle题的开心，至少之前是这样，等不忙了，还是要继续坚持刷题呀，我觉得刷题然后写博客，可以让更多人看到也是件
+很开心的事情，觉得自己对这个世界产生了impact，哪怕你想不到新的解法，但是如果能写的总结深入有趣有启发性，那我觉得也蛮有意思的哈哈，我都不知道有人会
+看我在个人网站上写的blog，但是没想到有人和我同学议论 然后我同学给我截了图 然后我都不认识==
+2. 提高简历的话，我觉得发顶会论文和之前实习经验是最有效的办法了。我觉得一作顶会还是蛮吸引眼球的，特别如果是oral的话，那开会期间都会认识很多公司
+的人，就会有人主动来问你想不想来实习，不过这个时候千万别像我就想当然觉得实习很稳了，其实这个就和refer差不多太多，只是帮助你拿下面试。你这个时候，
+该多面还是要多面。然后实习的时候要把握机会，坐我旁边实习的本科生一群人天天3，4点就开始就开始打麻将了。。。我每天搞到5，6点，晚上还继续学习，
+还不是为了未来更好的未来。
+3. 找到激励自己的办法。对我来，说被人小看，还是蛮激励人的吧。去年我之前一直以为一定会帮我refer的“朋友”最开始不愿意帮我refer给我的感触还是蛮大的吧，
+在我最怀疑自己的时候给我更大的打击，连试一试的机会都不愿意给我，说我这样去面试也面不过，还会影响她的refer信用评分。谢谢愿意相信我，素不相识帮我
+refer的学长。去年我把人家在朋友圈秀的fb的offer letter截了图，来激励自己，当时就想为了不要自己找房子，为了一个月多几千工资，咱怎么也要再努力一把吧。
+
+
+## Linkedin Interview 12/5
+// Implement the intersection and union operation on sorted lists.
+/**
+ * @param a a list of non-null integers, in ascending order
+ * @param b a list of non-null integers, in ascending order
+ * @return the integers that are contained in either a or b, in ascending order
+ */
+List<Integer> union(List<Integer> a, List<Integer> b);
+ 
+/**
+ * @param a a list of non-null integers, in ascending order
+ * @param b a list of non-null integers, in ascending order
+ * @return the integers that are contained in both a and b, in ascending order
+ */
+List<Integer> intersect(List<Integer> a, List<Integer> b);
+
+//1  3  4  5
+//p1
+//2  3  5  5 
+//p2
+ 
+//1 2 3 4 5 
+//prev = 5 
+//1 2 3 4 5 6
+
+//dummy->
+//p
+//-> 1 2 3 4 5 6
+//-> 3 
+
+ListNode*
+struct ListNode{
+    int val;
+    ListNode* next;
+    ListNode(int x): val(x), next(NULL) {};
+} 
+
+ListNode* union(ListNode* head1, ListNode* head2) {
+    ListNode* p1 = head1, *p2 = head2;
+    ListNode* dummy = new ListNode(-1);
+    ListNode* p = dummy;
+    int prev = -1;
+    while (!p1 && !p2) {
+        if (p1->val <= p2->val) {
+            ListNode* node = new ListNode(p1->val);
+            p1 = p1->next;
+        } else if (p1->val > p2->val) {
+            ListNode* node = new ListNode(p2->val);
+            p2 = p2->next;
+        } 
+        if (node->val == prev) continue;
+        p->next = node;
+        p = p->next;
+        prev = p->val;
+    }
+    while (!p1) {
+        ListNode* node = new ListNode(p1->val);
+        p1 = p1->next;
+        if (node->val == prev) continue;
+        p->next = node;
+        p = p->next;
+        prev = node->val;
+    } 
+    while (!p2) {
+        ListNode* node = new ListNode(p2->val);
+        p2 = p2->next;
+        if (node->val == prev) continue;
+        p->next = node;
+        p = p->next;
+        prev = node->val;
+    } 
+    return dummy->next;
+}
+
+
+ListNode* intersect(ListNode* head1, ListNode* head2) { 
+    ListNode* p1 = head1, *p2 = head2;
+    ListNode* dummy = new ListNode(-1);
+    ListNode* p = dummy;
+    int prev = -1;
+    while (!p1 && !p2) {
+        if (p1->val == p2->val) {
+            ListNode* node = new ListNode(p1->val);
+            p1 = p1->next;
+        } else if (p1->val < p2->val){
+            p1 = p1->next;
+            continue;
+        } else {
+            p2 = p2->next;
+            continue;
+        }
+        if (node->val == prev) continue;
+        p->next = node;
+        p = p->next;
+        prev = p->val;
+    }
+    return dummy->next;
+}
+
+
+
+
+// Say we have a binary tree, write a function which does a level order traversal on the tree + prints a special character at every level end
+struct TreeNode{
+    char *val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(char* x): val(x), left(NULL), right(NULL) {};
+}
+
+        e .   q [e]
+      /  \
+      a   b .  q[a b]
+    /     \
+   c        d
+   
+   e\n a b \n c d \n
+        
+void levelTraversal(TreeNode* root){
+    queue<TreeNode*> q;
+    q.push(root);
+    while (!q.empty()){
+        int size = q.size();
+        string res = "";
+        for (int i = 0; i < size; ++i) {
+            TreeNode* node = q.front();
+            q.pop();
+            res += node->val;
+            if (node->left) q.push(node->left);
+            if (node->right) q.push(node->right);
+        }
+        cout << res << "\n";
+    }
+    return;
+}
+
+
+
+
 ## Linkedin Interview on 11/15
 0<=1/(1+exp(-z))<=1
 x1, x2, ..., xn \in R^k
