@@ -12,6 +12,78 @@
 	<link href='http://fonts.googleapis.com/css?family=Enriqueta' rel='stylesheet' type='text/css' />
 	<link rel="stylesheet" type="text/css" href="in-response.css" title="In Response" media="all" />
 	<meta name="viewport" content="width=device-width, initial-scale=0.6" />
+
+	<!-- TradingView Widget BEGIN -->
+	<div class="tradingview-widget-container">
+	  <div class="tradingview-widget-container__widget"></div>
+	  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com" rel="noopener" target="_blank"><span class="blue-text">Ticker Tape</span></a> by TradingView</div>
+	  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+	  {
+	   "symbols": [
+	    {
+	      "description": "MSFT",
+	      "proName": "NASDAQ:MSFT"
+	    },
+	    {
+	      "description": "TSLA",
+	      "proName": "NASDAQ:TSLA"
+	    },
+	    {
+	      "description": "SPY",
+	      "proName": "AMEX:SPY"
+	    },
+	    {
+	      "description": "QQQ",
+	      "proName": "NASDAQ:QQQ"
+	    },
+	     {
+	      "proName": "BITSTAMP:BTCUSD",
+	      "title": "BTC/USD"
+	    },
+	    {
+	      "description": "USD/JPY",
+	      "proName": "FX_IDC:USDJPY"
+	    },
+	    {
+	      "description": "USD/CNY",
+	      "proName": "FX_IDC:USDCNY"
+	    },
+	    {
+	      "description": "Crude Oil",
+	      "proName": "USOIL"
+	    },
+	    //  {
+	    //   "description": "10YEAR-TREASURY",
+	    //   "proName": "GPW:FLTB1!"
+	    // },
+	    // {
+	    //   "description": "Nasdaq",
+	    //   "proName": "CME_MINI:NQ1!"
+	    // },
+	    // {
+	    //   "description": "S&P 500",
+	    //   "proName": "CME:SP1!"
+	    // },
+	    // {
+	    //   "description": "DOW",
+	    //   "proName": "EUREX:FSTX1!"
+	    // },
+	    // {
+	    //   "description": "VIX",
+	    //   "proName": "CBOE_EOD:VX1!"
+	    // }
+	  ],
+	  "colorTheme": "light",
+	  "isTransparent": false,
+	  "displayMode": "adaptive",
+	  "locale": "en"
+	}
+	  </script>
+	</div>
+	<!-- TradingView Widget END -->
+
+	
+	
 	<title>Liwei Wu...</title>
 </head>
 
@@ -53,11 +125,19 @@
 		<div class="col c12 alignjustify">
 			<h2> Liwei's Homepage~</h2>
 			<h3 id="black">Or Liwei's home, Liwei's page, whatever you call it ;)</h3>
-			<p>My name is Liwei Wu. I am studying <a href="https://www.stat.ucdavis.edu/"> Statistics</a> and <a href="http://www.cs.ucdavis.edu/">Computer Science</a> at University of
-            California-Davis. As a fourth-year PhD candidate, my research focus is on designing and implementing novel machine learning algorithms for recommender systems that can handle massive datasets. I am jointly advised by <a href="http://www.stat.ucdavis.edu/~chohsieh/rf/">Professor Cho-Jui Hsieh</a> and <a href="https://jsharpna.github.io/">Professor James Sharpnack</a>. 
+			<p>My name is Liwei Wu. I studied <a href="https://www.stat.ucdavis.edu/"> Statistics</a> and <a href="http://www.cs.ucdavis.edu/">Computer Science</a> at University of
+            California-Davis during 2014 - 2020. I got my machine learning PhD diploma in 2020 Spring.
+            During my PhD study, my research focus was initially on designing and implementing novel machine learning and deep learning algorithms for recommender systems that can handle massive datasets. Recently I have been more interested in natural language processing research, especially its application within financial markets.
+            Moreover, I am quite interested in the interaction of computer vision and NLP, which I think is quite promising. 
+            My research works have been published at top machine learning conferences KDD, ICML, NeurIPS, AISTATS and CVPR. I also review papers regualrly for ICML, NeurIPS to contribute back to the community.
+            I was jointly advised by <a href="http://www.stat.ucdavis.edu/~chohsieh/rf/">Professor Cho-Jui Hsieh</a> and <a href="https://jsharpna.github.io/">Professor James Sharpnack</a>. 
             I obtained MS in Statistics in 2016 and MS in Computer Science in 2018 along the way in doctoral program.
             Before moving to Davis, I received a BSc (First Class Honors) in <a href="http://www6.cityu.edu.hk/ma/">Computing Mathematics</a> from City University of Hong Kong in 2014. I did my undergraduate thesis on Extreme Value Thoery under supversion of <a href="http://personal.cityu.edu.hk/~xizhou/index.html">Professor Xiang Zhou</a>.</p>
-			 <p><b id="black">Currently, I am actively looking for full-time job opportunies starting 2019. </b></p>
+			 <p>
+			 	<!-- <b id="black"> -->
+			 Currently, my girlfriend Shuqing and I are doing a starter-up project based on my machine learning research while waiting to start my machine learning engineer position at LinkedIn on June 1st 2020. 
+			<!-- </b> -->
+		</p>
 		</div>
 	</div>
 	
@@ -66,7 +146,7 @@
     
 
 
- <div class="row">
+<!--  <div class="row">
 
 
 			
@@ -92,21 +172,28 @@
 	
 	<br>
     <br>
-    <br>
+    <br> -->
 
 	<div class="row">
 
 		<div class="col c3 ">
 			<h3>Recent News</h3>
-			<p> I will intern at Facebook News Feed Core Machine Learning team in 2018 summer. </p>
+			<p> I interned at a unicorn starter-up Dataminr at NYC for the remainer of 2019. </p>
+			<p> I traveled to NeurIPS in Vancouver, Canada during Dec 2019. </p>
+			<p> I traveled to KDD 2019 in Alaska and ICML 2019 in LA. </p>
+			<p> I traveled to NeurIPS in Montreal during Dec 2018. </p>
+			<p> I interned at LinkedIn knowledge graph team in 2019 summer at Sunnyvale. </p>
+			<p> I traveled to Stockholm, Sweden to present our ICML work during June 2018. </p>
+			<p> I interned at Facebook News Feed Core Machine Learning team in 2018 summer. </p>
 			<p> I travelled to Seattle, Washington during Oct 17-21, 2017 for Amazon's Annual Graduate Research
 				Symposium.</p>
 			<p> I travelled to Halifax, Nova Scotia - Canada to give an oral presentation at <a href="http://www.kdd.org/kdd2017/">KDD 2017</a> during Aug 13-17, 2017. </p>
-			<p>I just finished my internship at AT&T labs on cloud services (AT&T Integrated Clouds) team during 2017 summer, during which I filed a patent for a scalable, multi-threaded and distributed approach I invented for Operational Management for sequence data on Cloud Platforms incorporating the tools and novel algorithms I designed and implemented. You can refer to the Experience Section above for more details. </p>
+			<p> I interened at AT&T labs on cloud services (AT&T Integrated Clouds) team during 2017 summer, which was my first-time interning ever.</p>
+			<!-- <p>I just finished my internship at AT&T labs on cloud services (AT&T Integrated Clouds) team during 2017 summer, during which I filed a patent for a scalable, multi-threaded and distributed approach I invented for Operational Management for sequence data on Cloud Platforms incorporating the tools and novel algorithms I designed and implemented. You can refer to the Experience Section above for more details. </p> -->
 		</div>
 
 		<div class="col c9">
-			<h3>Promotional Video for my paper on Collaborative Ranking</h3>
+			<h3>Promotional Video for my 1st paper ever on Collaborative Ranking</h3>
 	
 			<div id="muteYouTubeVideoPlayer"></div>
 			<script async src="https://www.youtube.com/iframe_api"></script>
@@ -137,6 +224,34 @@
 			  });
 			 }
 			</script>
+			<br>
+			<p>Today's Market<p>
+			<!-- TradingView Widget BEGIN -->
+			<div class="tradingview-widget-container">
+			  <div id="tradingview_290f0"></div>
+			  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-QQQ/" rel="noopener" target="_blank"><span class="blue-text">QQQ Chart</span></a> by TradingView</div>
+			  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+			  <script type="text/javascript">
+			  new TradingView.widget(
+			  {
+			  "width": 980,
+			  "height": 610,
+			  "symbol": "NASDAQ:QQQ",
+			  "timezone": "America/New_York",
+			  "theme": "light",
+			  "style": "1",
+			  "locale": "en",
+			  "toolbar_bg": "#f1f3f6",
+			  "enable_publishing": false,
+			  "range": "ytd",
+			  "allow_symbol_change": true,
+			  "container_id": "tradingview_290f0"
+			}
+			  );
+			  </script>
+			</div>
+			<!-- TradingView Widget END -->
+
 			<!-- <iframe class = "youtube" src="https://www.youtube.com/embed/BWDLDKVKaq8?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe> -->
 			<!-- <iframe class = "youtube" src="https://www.youtube.com/embed/BWDLDKVKaq8?autoplay=1&amp;loop=1&amp;volume=0&amp;cc_load_policy=1rel=0&amp;controls=1&amp;showinfo=0&amp;playlist=BWDLDKVKaq8" frameborder="0" allowfullscreen></iframe> -->
 
